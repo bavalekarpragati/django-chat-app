@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+mybackend_env/
+ENV/
+env.bak/
+venv.bak/
+
+# Django
+*.log
+*.pot
+*.pyc
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+/media/
+/staticfiles/
+/static/
+
+# Database
+*.db
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Logs
+*.log
+debug.log
+
+# Testing
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+
+# Uploads
+/media/uploads/
+/media/avatars/
+
+# Secret keys
+config.py
+secrets.py
+key.py
+
+# Backup files
+*.bak
+*.backup

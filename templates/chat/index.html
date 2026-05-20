@@ -1,0 +1,104 @@
+cat > templates/chat/index.html << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Rooms</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-purple-600 to-blue-500">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden">
+            <div class="bg-purple-600 text-white p-6">
+                <h1 class="text-2xl font-bold">💬 Chat Rooms</h1>
+                <p class="text-purple-200">Welcome to real-time chat!</p>
+            </div>
+            
+            <div class="p-6">
+                <div class="mb-6">
+                    <h3 class="text-lg font-bold mb-2">Create New Room</h3>
+                    <div class="flex space-x-2">
+                        <input type="text" id="room-name-input" placeholder="Room name" 
+                               class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-purple-500">
+                        <button id="create-room-btn" 
+                                class="bg-green-500 text-white rounded-lg px-6 py-2 hover:bg-green-600 transition">
+                            Create
+                        </button>
+                    </div>
+                </div>
+                
+                <h3 class="text-lg font-bold mb-2">Available Rooms</h3>
+                <div id="rooms-list" class="space-y-2">
+                    <div class="text-gray-500">Loading rooms...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        async function loadRooms() {
+            try {
+                const response = await fetch('/api/rooms/');
+                const rooms = await response.json();
+                
+                const roomsList = document.getElementById('rooms-list');
+                roomsList.innerHTML = '';
+                
+                if (rooms.length === 0) {
+                    roomsList.innerHTML = '<div class="text-gray-500 text-center py-4">No rooms yet. Create one above!</div>';
+                    return;
+                }
+                
+                rooms.forEach(room => {
+                    const roomDiv = document.createElement('div');
+                    roomDiv.className = 'bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition flex justify-between items-center';
+                    roomDiv.innerHTML = `
+                        <div>
+                            <div class="font-bold text-purple-600">${escapeHtml(room.name)}</div>
+                            <div class="text-sm text-gray-500">Messages: ${room.message_count} | Members: ${room.member_count}</div>
+                        </div>
+                        <a href="/room/${room.name}/" class="bg-purple-600 text-white rounded-lg px-4 py-2 hover:bg-purple-700 transition">
+                            Join
+                        </a>
+                    `;
+                    roomsList.appendChild(roomDiv);
+                });
+            } catch (error) {
+                console.error('Error loading rooms:', error);
+                document.getElementById('rooms-list').innerHTML = '<div class="text-red-500 text-center py-4">Error loading rooms</div>';
+            }
+        }
+        
+        function createRoom() {
+            const roomName = document.getElementById('room-name-input').value.trim();
+            if (!roomName) {
+                alert('Please enter a room name');
+                return;
+            }
+            
+            // Redirect directly to the room (room will be auto-created)
+            window.location.href = `/room/${roomName}/`;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Setup event listeners
+        document.getElementById('create-room-btn').addEventListener('click', createRoom);
+        document.getElementById('room-name-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                createRoom();
+            }
+        });
+        
+        // Load rooms on page load
+        loadRooms();
+        
+        // Refresh every 10 seconds
+        setInterval(loadRooms, 10000);
+    </script>
+</body>
+</html>
+EOF
