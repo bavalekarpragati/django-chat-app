@@ -2,6 +2,7 @@
 from django.urls import path
 from . import views
 from django.views.generic import TemplateView
+from .file_upload import upload_file
 
 urlpatterns = [
     # Web page views (work at both / and /chat/)
@@ -22,4 +23,5 @@ urlpatterns = [
     path('api/stats/', views.get_chat_stats, name='api-stats'),
     path('login/', TemplateView.as_view(template_name='accounts/login.html'), name='login'),
     path('register/', TemplateView.as_view(template_name='accounts/register.html'), name='register'),
+    path('api/upload/', upload_file, name='upload-file'),
 ]

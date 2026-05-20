@@ -2,9 +2,179 @@
 <html>
 <head>
     <title>Chat Room: {{ room_name }}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS for hover effects and animations -->
+    <style>
+        /* Message hover effects - THIS IS THE KEY PART FOR STEP 5 */
+        .message-item {
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        
+        .message-actions {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            z-index: 10;
+            display: none;
+            gap: 5px;
+        }
+        
+        .message-item:hover .message-actions {
+            display: flex !important;
+        }
+        
+        /* Custom scrollbar for messages container */
+        #messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        #messages::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        #messages::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        /* Message fade-in animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message-item {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        /* File preview styling */
+        .file-preview {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            margin-top: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .file-preview:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Typing indicator animation */
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .typing-dots {
+            display: inline-flex;
+            gap: 2px;
+        }
+        
+        .typing-dots span {
+            animation: blink 1.4s infinite;
+        }
+        
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        /* Button hover effects */
+        .btn-hover {
+            transition: all 0.2s ease;
+        }
+        
+        .btn-hover:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Image preview zoom on click */
+        .image-preview {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .image-preview:hover {
+            transform: scale(1.02);
+        }
+        
+        /* Modal for image fullscreen */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            cursor: pointer;
+        }
+        
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            margin-top: 5%;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close-modal:hover {
+            color: #bbb;
+        }
+
+        /* ADD THIS AT THE BOTTOM OF YOUR STYLE SECTION */
+        .message-item.deleted {
+            opacity: 0.6;
+            filter: grayscale(0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .message-deleted {
+            font-style: italic;
+            opacity: 0.7;
+        }
+    </style>
 </head>
 <body class="bg-gradient-to-br from-purple-600 to-blue-500">
+    <!-- Image Modal for Fullscreen View -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+    
     <div class="max-w-6xl mx-auto h-screen flex flex-col">
         <!-- Chat Header -->
         <div class="bg-white shadow-md rounded-t-2xl p-4 flex justify-between items-center">
@@ -27,16 +197,28 @@
         <!-- Typing Indicator -->
         <div id="typing-indicator" class="text-sm text-gray-500 italic px-4 py-1 bg-white"></div>
         
-        <!-- Input Area -->
+        <!-- Input Area with File Upload Button -->
         <div class="bg-white p-4 rounded-b-2xl shadow-lg">
             <div class="flex space-x-2">
+                <!-- File Upload Button -->
+                <input type="file" id="file-input" class="hidden" accept="image/*,video/*,audio/*,application/pdf,application/msword,text/plain">
+                <button id="file-btn" class="bg-gray-500 text-white rounded-lg px-4 py-2 hover:bg-gray-600 transition btn-hover">
+                    <i class="fas fa-paperclip"></i> Attach
+                </button>
+                
+                <!-- Message Input -->
                 <input type="text" id="message-text" 
                     class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-purple-500"
                     placeholder="Type your message..." autocomplete="off">
+                
+                <!-- Send Button -->
                 <button id="send-btn" 
-                    class="bg-purple-600 text-white rounded-lg px-6 py-2 hover:bg-purple-700 transition">
-                    Send
+                    class="bg-purple-600 text-white rounded-lg px-6 py-2 hover:bg-purple-700 transition btn-hover">
+                    <i class="fas fa-paper-plane"></i> Send
                 </button>
+            </div>
+            <div class="text-xs text-gray-400 mt-2">
+                <i class="fas fa-info-circle"></i> Press Enter to send | Click Attach to share images, videos, or documents | Hover over your messages to edit/delete
             </div>
         </div>
     </div>
@@ -46,6 +228,19 @@
         let username = null;
         let socket;
         let typingTimeout;
+        
+        // Modal functions for image fullscreen
+        function openModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = "block";
+            modalImg.src = imageSrc;
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = "none";
+        }
         
         // Get stored user info
         function getUserInfo() {
@@ -82,18 +277,25 @@
             
             socket.onopen = function() {
                 console.log('✅ Connected to chat as:', username);
+                addSystemMessage('You joined the chat');
             };
             
+            // Update WebSocket onmessage handler
             socket.onmessage = function(e) {
                 const data = JSON.parse(e.data);
-                console.log('Message received:', data);
                 
                 if (data.type === 'message') {
-                    displayMessage(data.username, data.message, data.timestamp);
+                    displayMessage(data.username, data.message, data.timestamp, data.message_id, data.is_edited || false);
+                } else if (data.type === 'file') {
+                    displayFileMessage(data.username, data.message, data.file_url, data.file_type, data.file_name, data.timestamp);
                 } else if (data.type === 'system') {
                     addSystemMessage(data.message);
                 } else if (data.type === 'typing') {
                     displayTyping(data.username, data.is_typing);
+                } else if (data.type === 'edit') {
+                    handleMessageEdit(data);
+                } else if (data.type === 'delete') {
+                    handleMessageDelete(data);
                 }
             };
             
@@ -104,49 +306,189 @@
             
             socket.onclose = function() {
                 console.log('WebSocket disconnected');
+                addSystemMessage('Disconnected. Reconnecting...');
                 setTimeout(connectWebSocket, 3000);
             };
         }
         
-        // Display message
-        function displayMessage(msgUsername, message, timestamp) {
+        // Update displayMessage to include edit/delete buttons with hover effects
+        function displayMessage(msgUsername, message, timestamp, messageId, isEdited = false) {
             const messagesDiv = document.getElementById('messages');
             const isMine = msgUsername === username;
-            
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `flex ${isMine ? 'justify-end' : 'justify-start'}`;
-            
-            messageDiv.innerHTML = `
-                <div class="max-w-[70%] ${isMine ? 'bg-purple-600 text-white' : 'bg-white text-gray-800'} rounded-2xl p-3 shadow">
-                    <div class="font-bold text-sm ${isMine ? 'text-purple-200' : 'text-purple-600'}">${escapeHtml(msgUsername)}</div>
-                    <div class="message-text">${escapeHtml(message)}</div>
-                    <div class="text-xs ${isMine ? 'text-purple-200' : 'text-gray-400'} mt-1">${timestamp ? new Date(timestamp).toLocaleTimeString() : new Date().toLocaleTimeString()}</div>
-                </div>
-            `;
             
             if (messagesDiv.children.length === 1 && messagesDiv.children[0].innerText === 'Loading messages...') {
                 messagesDiv.innerHTML = '';
             }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message-item flex ${isMine ? 'justify-end' : 'justify-start'} mb-3`;
+            messageDiv.setAttribute('data-id', messageId || '');
+            
+            const editedMark = isEdited ? ' <em class="text-xs">(edited)</em>' : '';
+            
+            messageDiv.innerHTML = `
+                <div class="max-w-[70%] ${isMine ? 'bg-purple-600 text-white' : 'bg-white text-gray-800'} rounded-2xl p-3 shadow relative group">
+                    <div class="font-bold text-sm ${isMine ? 'text-purple-200' : 'text-purple-600'}">${escapeHtml(msgUsername)}</div>
+                    <div class="message-text break-words">${escapeHtml(message)}</div>
+                    <div class="text-xs ${isMine ? 'text-purple-200' : 'text-gray-400'} mt-1">
+                        ${timestamp ? new Date(timestamp).toLocaleTimeString() : new Date().toLocaleTimeString()}${editedMark}
+                    </div>
+                    ${isMine ? `
+                        <div class="message-actions absolute -top-2 -right-2 space-x-1">
+                            <button onclick="editMessage('${messageId}', '${escapeHtml(message).replace(/'/g, "\\'")}')" 
+                                    class="bg-blue-500 text-white rounded-full w-6 h-6 text-xs hover:bg-blue-600 transition">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteMessage('${messageId}')" 
+                                    class="bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600 transition">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
             
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
         
-        // Add system message
-        function addSystemMessage(message) {
+        // Handle edit event
+        function handleMessageEdit(data) {
+            const messageDiv = document.querySelector(`.message-item[data-id="${data.message_id}"]`);
+            if (messageDiv) {
+                const textDiv = messageDiv.querySelector('.message-text');
+                const timeDiv = messageDiv.querySelector('.text-xs');
+                if (textDiv) {
+                    textDiv.innerHTML = escapeHtml(data.new_text);
+                    if (timeDiv && !timeDiv.innerHTML.includes('edited')) {
+                        timeDiv.innerHTML = timeDiv.innerHTML + ' <em class="text-xs">(edited)</em>';
+                    }
+                }
+            }
+        }
+
+        // Handle delete event (for both text and file messages)
+        function handleMessageDelete(data) {
+            const messageDiv = document.querySelector(`.message-item[data-id="${data.message_id}"]`);
+            if (messageDiv) {
+                const contentDiv = messageDiv.querySelector('.max-w-\\[70\\%\\]');
+                if (contentDiv) {
+                    // Clear the content and show deleted message
+                    contentDiv.innerHTML = `
+                        <div class="font-bold text-sm ${data.username === username ? 'text-purple-200' : 'text-purple-600'}">
+                            ${escapeHtml(data.username)}
+                        </div>
+                        <div class="message-text">🚫 This ${data.is_file ? 'file' : 'message'} was deleted</div>
+                        <div class="text-xs ${data.username === username ? 'text-purple-200' : 'text-gray-400'} mt-1">
+                            ${new Date().toLocaleTimeString()}
+                        </div>
+                    `;
+                    messageDiv.style.opacity = '0.6';
+                }
+            }
+        }
+
+        
+        // Display file message with delete button
+        function displayFileMessage(msgUsername, message, fileUrl, fileType, fileName, timestamp, messageId) {
             const messagesDiv = document.getElementById('messages');
-            const sysDiv = document.createElement('div');
-            sysDiv.className = 'flex justify-center';
-            sysDiv.innerHTML = `
-                <div class="bg-gray-200 text-gray-600 rounded-full px-4 py-1 text-sm my-2">
-                    ${escapeHtml(message)}
-                </div>
-            `;
+            const isMine = msgUsername === username;
             
             if (messagesDiv.children.length === 1 && messagesDiv.children[0].innerText === 'Loading messages...') {
                 messagesDiv.innerHTML = '';
             }
             
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message-item flex ${isMine ? 'justify-end' : 'justify-start'} mb-3`;
+            messageDiv.setAttribute('data-id', messageId || Date.now().toString());
+            
+            let contentHtml = '';
+            if (fileType === 'image') {
+                contentHtml = `<img src="${fileUrl}" class="max-w-xs rounded-lg cursor-pointer mt-2 image-preview" onclick="openModal('${fileUrl}')">`;
+            } else if (fileType === 'video') {
+                contentHtml = `<video src="${fileUrl}" controls class="max-w-xs rounded-lg mt-2"></video>`;
+            } else if (fileType === 'audio') {
+                contentHtml = `<audio src="${fileUrl}" controls class="w-64 mt-2"></audio>`;
+            } else {
+                contentHtml = `<a href="${fileUrl}" target="_blank" class="text-blue-500 underline mt-2 inline-block hover:text-blue-700"><i class="fas fa-download"></i> Download ${escapeHtml(fileName)}</a>`;
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="max-w-[70%] ${isMine ? 'bg-purple-600 text-white' : 'bg-white text-gray-800'} rounded-2xl p-3 shadow relative group">
+                    <div class="font-bold text-sm ${isMine ? 'text-purple-200' : 'text-purple-600'}">${escapeHtml(msgUsername)}</div>
+                    <div class="break-words">${escapeHtml(message)}</div>
+                    ${contentHtml}
+                    <div class="text-xs ${isMine ? 'text-purple-200' : 'text-gray-400'} mt-1">${timestamp ? new Date(timestamp).toLocaleTimeString() : new Date().toLocaleTimeString()}</div>
+                    ${isMine ? `
+                        <div class="message-actions absolute -top-2 -right-2 space-x-1">
+                            <button onclick="deleteFileMessage('${messageId}', true)" 
+                                    class="bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600 transition">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        // Delete file message function
+        function deleteFileMessage(messageId, isFile = true) {
+            if (confirm('Are you sure you want to delete this file? This action cannot be undone.')) {
+                socket.send(JSON.stringify({
+                    'action': 'delete',
+                    'type': 'delete',
+                    'message_id': messageId,
+                    'username': username
+                }));
+            }
+        }
+
+        // Edit message function
+        function editMessage(messageId, currentText) {
+            const newText = prompt('Edit your message:', currentText);
+            if (newText && newText !== currentText) {
+                socket.send(JSON.stringify({
+                    'action': 'edit',
+                    'type': 'edit',
+                    'message_id': messageId,
+                    'text': newText,
+                    'username': username
+                }));
+            }
+        }
+
+        // Update deleteMessage function to handle files
+        function deleteMessage(messageId, isFile = false) {
+            const confirmMsg = isFile ? 'Are you sure you want to delete this file?' : 'Are you sure you want to delete this message?';
+            if (confirm(confirmMsg)) {
+                socket.send(JSON.stringify({
+                    'action': 'delete',
+                    'type': 'delete',
+                    'message_id': messageId,
+                    'username': username
+                }));
+            }
+        }
+
+        // Add system message
+        function addSystemMessage(message) {
+            const messagesDiv = document.getElementById('messages');
+            
+            // Remove loading message if present
+            if (messagesDiv.children.length === 1 && messagesDiv.children[0].innerText === 'Loading messages...') {
+                messagesDiv.innerHTML = '';
+            }
+            
+            const sysDiv = document.createElement('div');
+            sysDiv.className = 'flex justify-center mb-2';
+            sysDiv.innerHTML = `
+                <div class="bg-gray-200 text-gray-600 rounded-full px-4 py-1 text-sm">
+                    <i class="fas fa-info-circle"></i> ${escapeHtml(message)}
+                </div>
+            `;
             messagesDiv.appendChild(sysDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
@@ -168,6 +510,62 @@
             }
         }
         
+        // File upload handling
+        function setupFileUpload() {
+            const fileInput = document.getElementById('file-input');
+            const fileBtn = document.getElementById('file-btn');
+            
+            if (!fileBtn || !fileInput) {
+                console.error('File upload elements not found');
+                return;
+            }
+            
+            fileBtn.onclick = () => fileInput.click();
+            
+            fileInput.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                // Show uploading message
+                addSystemMessage(`📤 Uploading ${file.name}...`);
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const token = localStorage.getItem('access_token');
+                
+                try {
+                    const response = await fetch('/api/upload/', {
+                        method: 'POST',
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.success) {
+                        // Send file message via WebSocket
+                        socket.send(JSON.stringify({
+                            'type': data.file_type,
+                            'file_url': data.file_url,
+                            'file_name': data.file_name,
+                            'file_type': data.file_type,
+                            'file_size': data.file_size,
+                            'username': username
+                        }));
+                        addSystemMessage(`✅ ${file.name} uploaded successfully!`);
+                    } else {
+                        addSystemMessage(`❌ Upload failed: ${data.error || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    addSystemMessage(`❌ Upload failed: Network error`);
+                }
+                
+                fileInput.value = '';
+            };
+        }
+        
         // Typing indicator
         let typingUsers = new Set();
         
@@ -183,7 +581,7 @@
             const typingDiv = document.getElementById('typing-indicator');
             if (typingUsers.size > 0) {
                 const names = Array.from(typingUsers).join(', ');
-                typingDiv.innerHTML = `${names} ${typingUsers.size === 1 ? 'is' : 'are'} typing...`;
+                typingDiv.innerHTML = `<i class="fas fa-keyboard"></i> ${names} ${typingUsers.size === 1 ? 'is' : 'are'} typing...`;
             } else {
                 typingDiv.innerHTML = '';
             }
@@ -191,12 +589,13 @@
         
         // Escape HTML
         function escapeHtml(text) {
+            if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
         
-        // Load messages
+        // Load messages from API
         async function loadMessages() {
             try {
                 const token = localStorage.getItem('access_token');
@@ -219,7 +618,13 @@
                         messagesDiv.innerHTML = '<div class="text-center text-gray-500">No messages yet. Start the conversation!</div>';
                     } else {
                         messages.reverse().forEach(msg => {
-                            displayMessage(msg.username, msg.text, msg.timestamp);
+                            if (msg.message_type === 'image' || msg.message_type === 'video' || msg.message_type === 'audio' || msg.message_type === 'file') {
+                                // Pass message ID to file display function
+                                displayFileMessage(msg.username, msg.text, msg.file_url, msg.message_type, msg.file_name, msg.timestamp, msg.id);
+                            } else {
+                                const isEdited = msg.edited_at !== null;
+                                displayMessage(msg.username, msg.text, msg.timestamp, msg.id, isEdited);
+                            }
                         });
                     }
                 }
@@ -240,7 +645,7 @@
                     const members = await membersResponse.json();
                     const memberCountSpan = document.getElementById('member-count');
                     if (memberCountSpan) {
-                        memberCountSpan.innerHTML = `👥 ${members.length} members`;
+                        memberCountSpan.innerHTML = `<i class="fas fa-users"></i> ${members.length} members`;
                     }
                 }
             } catch(e) {
@@ -260,6 +665,7 @@
             if (messageInput) {
                 messageInput.addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') {
+                        e.preventDefault();
                         sendMessage();
                     }
                 });
@@ -294,6 +700,7 @@
             loadMessages();
             updateMemberCount();
             setupEventListeners();
+            setupFileUpload();
         }
         
         init();

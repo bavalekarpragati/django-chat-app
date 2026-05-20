@@ -30,13 +30,12 @@ class ChatRoomSerializer(serializers.ModelSerializer):
             return MessageSerializer(last_msg).data
         return None
 
+# chat/serializers.py
 class MessageSerializer(serializers.ModelSerializer):
-    username_display = serializers.CharField(source='username', read_only=True)
-    
     class Meta:
         model = Message
-        fields = ['id', 'room', 'user', 'username', 'username_display', 'text', 
-                 'message_type', 'file_url', 'timestamp']
+        fields = ['id', 'room', 'user', 'username', 'text', 'message_type', 
+                  'file_url', 'file_name', 'file_size', 'timestamp']
         read_only_fields = ['timestamp']
 
 class RoomMemberSerializer(serializers.ModelSerializer):

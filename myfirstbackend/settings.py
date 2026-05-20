@@ -122,6 +122,12 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# File upload settings
+MAX_UPLOAD_SIZE = 10485760  # 10MB
+ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 
+                      'video/mp4', 'video/webm', 'audio/mpeg', 'audio/wav',
+                      'application/pdf', 'text/plain']
+
 # Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

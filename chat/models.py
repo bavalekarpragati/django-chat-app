@@ -20,6 +20,7 @@ class Message(models.Model):
         ('text', 'Text'),
         ('image', 'Image'),
         ('video', 'Video'),
+        ('audio', 'Audio'),
         ('file', 'File'),
         ('system', 'System Message'),
     ]
@@ -36,19 +37,28 @@ class Message(models.Model):
     edited_at = models.DateTimeField(null=True, blank=True)
     is_deleted = models.BooleanField(default=False)
     reactions = models.JSONField(default=dict)  # Store reactions like {"👍": ["user1", "user2"]}
+    file = models.FileField(upload_to='chat_files/%Y/%m/%d/', null=True, blank=True)
+    file_name = models.CharField(max_length=255, blank=True, null=True)
+    file_size = models.IntegerField(default=0)  # Size in bytes
+    file_type = models.CharField(max_length=100, blank=True, null=True)  # MIME type
+    edited_at = models.DateTimeField(null=True, blank=True)
+    is_deleted = models.BooleanField(default=False)
+    parent_message = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='replies')
     
     
     def __str__(self):
         return f"{self.username}: {self.text[:50]}"
     
     def edit_message(self, new_text):
+        """Edit message content"""
         self.text = new_text
         self.edited_at = timezone.now()
         self.save()
     
     def soft_delete(self):
+        """Soft delete message (mark as deleted)"""
         self.is_deleted = True
-        self.text = "[This message was deleted]"
+        self.text = "🚫 This message was deleted"
         self.save()
     
     def add_reaction(self, reaction, username):
