@@ -77,8 +77,9 @@
         }
         
         .reaction-badge.active {
-            background: rgba(107, 70, 193, 0.2);
+            background: rgba(107, 70, 193, 0.25);
             border: 1px solid #667eea;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
         
         .reaction-emoji {
@@ -189,7 +190,7 @@
                 </button>
             </div>
             <div class="text-xs text-gray-400 mt-2">
-                <i class="fas fa-info-circle"></i> Press Enter to send | Click 😊 on any message to add reaction
+                <i class="fas fa-info-circle"></i> Press Enter to send | Click 😊 to add/remove reaction | Click reaction badge to toggle
             </div>
         </div>
     </div>
@@ -229,6 +230,75 @@
             window.location.href = '/login/';
         }
         
+        // Track pending reactions to prevent duplicates
+        let pendingReactions = new Set();
+
+        function toggleReaction(messageId, reaction) {
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                // Create a unique key for this reaction action
+                const actionKey = `${messageId}_${reaction}`;
+                
+                // Prevent duplicate rapid clicks
+                if (pendingReactions.has(actionKey)) {
+                    return;
+                }
+                
+                const messageDiv = document.querySelector(`.message-item[data-id="${messageId}"]`);
+                if (messageDiv) {
+                    const reactionBtn = Array.from(messageDiv.querySelectorAll('.reaction-badge')).find(
+                        btn => btn.querySelector('.reaction-emoji')?.textContent === reaction
+                    );
+                    const isActive = reactionBtn && reactionBtn.classList.contains('active');
+                    const action = isActive ? 'remove' : 'add';
+                    
+                    // Mark as pending
+                    pendingReactions.add(actionKey);
+                    
+                    // Send to server
+                    socket.send(JSON.stringify({
+                        'type': 'reaction',
+                        'message_id': messageId,
+                        'reaction': reaction,
+                        'reaction_action': action,
+                        'username': username
+                    }));
+                    
+                    // Update UI optimistically
+                    if (reactionBtn) {
+                        if (action === 'remove') {
+                            reactionBtn.classList.remove('active');
+                            const countSpan = reactionBtn.querySelector('.reaction-count');
+                            if (countSpan) {
+                                let count = parseInt(countSpan.textContent);
+                                if (count > 0) {
+                                    countSpan.textContent = count - 1;
+                                }
+                                if (count <= 1) {
+                                    reactionBtn.remove();
+                                    const container = messageDiv.querySelector('.reactions-container');
+                                    if (container && container.children.length === 0) {
+                                        container.remove();
+                                    }
+                                }
+                            }
+                        } else {
+                            reactionBtn.classList.add('active');
+                            const countSpan = reactionBtn.querySelector('.reaction-count');
+                            if (countSpan) {
+                                let count = parseInt(countSpan.textContent);
+                                countSpan.textContent = count + 1;
+                            }
+                        }
+                    }
+                    
+                    // Clear pending after delay
+                    setTimeout(() => {
+                        pendingReactions.delete(actionKey);
+                    }, 500);
+                }
+            }
+        }
+        
         // Show reaction picker
         function showReactionPicker(messageId, event) {
             event.stopPropagation();
@@ -246,7 +316,7 @@
                 btn.className = 'reaction-picker-btn';
                 btn.onclick = (e) => {
                     e.stopPropagation();
-                    addReaction(messageId, reaction);
+                    toggleReaction(messageId, reaction);
                     picker.remove();
                 };
                 picker.appendChild(btn);
@@ -267,30 +337,6 @@
                     }
                 });
             }, 100);
-        }
-        
-        function addReaction(messageId, reaction) {
-            if (socket && socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify({
-                    'type': 'reaction',
-                    'message_id': messageId,
-                    'reaction': reaction,
-                    'reaction_action': 'add',
-                    'username': username
-                }));
-            }
-        }
-        
-        function removeReaction(messageId, reaction) {
-            if (socket && socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify({
-                    'type': 'reaction',
-                    'message_id': messageId,
-                    'reaction': reaction,
-                    'reaction_action': 'remove',
-                    'username': username
-                }));
-            }
         }
         
         // WebSocket connection
@@ -333,7 +379,6 @@
             };
         }
         
-        // Display message with reaction button
         function displayMessage(msgUsername, message, timestamp, messageId, isEdited = false, reactions = {}) {
             const messagesDiv = document.getElementById('messages');
             const isMine = msgUsername === username;
@@ -346,13 +391,18 @@
             messageDiv.className = `message-item flex ${isMine ? 'justify-end' : 'justify-start'} mb-4`;
             messageDiv.setAttribute('data-id', messageId || '');
             
-            // Build reactions HTML
+            // Build reactions HTML with proper count
             let reactionsHtml = '';
             if (reactions && Object.keys(reactions).length > 0) {
                 reactionsHtml = '<div class="reactions-container">';
-                for (const [reaction, count] of Object.entries(reactions)) {
+                for (const [reaction, users] of Object.entries(reactions)) {
+                    // Ensure users is an array and get proper count
+                    const userList = Array.isArray(users) ? users : [];
+                    const count = userList.length;
+                    const hasUserReacted = userList.includes(username);
                     reactionsHtml += `
-                        <button class="reaction-badge" onclick="addReaction('${messageId}', '${reaction}')">
+                        <button class="reaction-badge ${hasUserReacted ? 'active' : ''}" 
+                                onclick="toggleReaction('${messageId}', '${reaction}')">
                             <span class="reaction-emoji">${reaction}</span>
                             <span class="reaction-count">${count}</span>
                         </button>
@@ -452,9 +502,14 @@
                 
                 if (data.reactions && Object.keys(data.reactions).length > 0) {
                     let newHtml = '<div class="reactions-container">';
-                    for (const [reaction, count] of Object.entries(data.reactions)) {
+                    for (const [reaction, users] of Object.entries(data.reactions)) {
+                        // Ensure users is an array and get proper count
+                        const userList = Array.isArray(users) ? users : [];
+                        const count = userList.length;
+                        const hasUserReacted = userList.includes(username);
                         newHtml += `
-                            <button class="reaction-badge" onclick="addReaction('${data.message_id}', '${reaction}')">
+                            <button class="reaction-badge ${hasUserReacted ? 'active' : ''}" 
+                                    onclick="toggleReaction('${data.message_id}', '${reaction}')">
                                 <span class="reaction-emoji">${reaction}</span>
                                 <span class="reaction-count">${count}</span>
                             </button>

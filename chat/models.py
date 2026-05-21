@@ -63,18 +63,19 @@ class Message(models.Model):
         self.save()
     
     def add_reaction(self, reaction, username):
-        """Add a reaction to the message"""
+        """Add a reaction to the message (only once per user)"""
         if not self.reactions:
             self.reactions = {}
         
         if reaction not in self.reactions:
             self.reactions[reaction] = []
         
+        # Only add if user hasn't already reacted
         if username not in self.reactions[reaction]:
             self.reactions[reaction].append(username)
             self.save()
             return True
-        return False
+        return False  # User already reacted with this emoji
     
     def remove_reaction(self, reaction, username):
         """Remove a reaction from the message"""
