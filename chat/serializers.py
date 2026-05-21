@@ -35,8 +35,8 @@ class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ['id', 'room', 'user', 'username', 'text', 'message_type', 
-                  'file_url', 'file_name', 'file_size', 'timestamp']
-        read_only_fields = ['timestamp']
+                  'file_url', 'file_name', 'file_size', 'timestamp', 'edited_at', 'reactions']
+        read_only_fields = ['timestamp', 'edited_at']
 
 class RoomMemberSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)

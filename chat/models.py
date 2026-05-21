@@ -44,6 +44,7 @@ class Message(models.Model):
     edited_at = models.DateTimeField(null=True, blank=True)
     is_deleted = models.BooleanField(default=False)
     parent_message = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='replies')
+    reactions = models.JSONField(default=dict, blank=True)
     
     
     def __str__(self):
@@ -62,11 +63,36 @@ class Message(models.Model):
         self.save()
     
     def add_reaction(self, reaction, username):
+        """Add a reaction to the message"""
+        if not self.reactions:
+            self.reactions = {}
+        
         if reaction not in self.reactions:
             self.reactions[reaction] = []
+        
         if username not in self.reactions[reaction]:
             self.reactions[reaction].append(username)
-        self.save()
+            self.save()
+            return True
+        return False
+    
+    def remove_reaction(self, reaction, username):
+        """Remove a reaction from the message"""
+        if self.reactions and reaction in self.reactions:
+            if username in self.reactions[reaction]:
+                self.reactions[reaction].remove(username)
+                # Clean up empty reaction lists
+                if not self.reactions[reaction]:
+                    del self.reactions[reaction]
+                self.save()
+                return True
+        return False
+    
+    def get_reactions_count(self):
+        """Get count of each reaction"""
+        if not self.reactions:
+            return {}
+        return {reaction: len(users) for reaction, users in self.reactions.items()}
     
     class Meta:
         ordering = ['timestamp']

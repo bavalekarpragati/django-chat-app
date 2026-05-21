@@ -75,6 +75,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.handle_typing(text_data_json)
         elif action in ['image', 'video', 'audio', 'file']:
             await self.handle_file_message(text_data_json)
+        elif action == 'reaction':
+            await self.handle_reaction(text_data_json)
     
     async def handle_text_message(self, data):
         message_text = data.get('message', '')
@@ -362,21 +364,79 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
             )
 
+    # Add reaction handler
     async def handle_reaction(self, data):
+        """Handle message reactions"""
         message_id = data.get('message_id')
-        reaction = data.get('reaction')
-        username = self.scope['user'].username
+        reaction = data.get('reaction', '')
+        action = data.get('reaction_action', 'add')  # 'add' or 'remove'
+        username = self.scope['user'].username if self.scope['user'].is_authenticated else data.get('username', self.get_username())
         
-        await self.add_reaction(message_id, reaction, username)
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'message_reaction',
-                'message_id': message_id,
-                'reaction': reaction,
-                'username': username
-            }
-        )
+        if not message_id or not reaction:
+            return
+        
+        success = False
+        if action == 'add':
+            success = await self.add_reaction_to_message(message_id, reaction, username)
+        elif action == 'remove':
+            success = await self.remove_reaction_from_message(message_id, reaction, username)
+        
+        if success:
+            # Get updated reactions
+            updated_reactions = await self.get_message_reactions(message_id)
+            
+            # Broadcast reaction update to room
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'reaction_update',
+                    'message_id': message_id,
+                    'reaction': reaction,
+                    'action': action,
+                    'username': username,
+                    'reactions': updated_reactions
+                }
+            )
+
+    # Database methods for reactions
+    @database_sync_to_async
+    def add_reaction_to_message(self, message_id, reaction, username):
+        """Add reaction to message"""
+        try:
+            message = Message.objects.get(id=message_id)
+            return message.add_reaction(reaction, username)
+        except Message.DoesNotExist:
+            return False
+        
+    @database_sync_to_async
+    def remove_reaction_from_message(self, message_id, reaction, username):
+        """Remove reaction from message"""
+        try:
+            message = Message.objects.get(id=message_id)
+            return message.remove_reaction(reaction, username)
+        except Message.DoesNotExist:
+            return False
+        
+    @database_sync_to_async
+    def get_message_reactions(self, message_id):
+        """Get all reactions for a message"""
+        try:
+            message = Message.objects.get(id=message_id)
+            return message.get_reactions_count()
+        except Message.DoesNotExist:
+            return {}
+        
+    # Broadcast method for reactions
+    async def reaction_update(self, event):
+        """Send reaction update to WebSocket"""
+        await self.send(text_data=json.dumps({
+            'type': 'reaction',
+            'message_id': event['message_id'],
+            'reaction': event['reaction'],
+            'action': event['action'],
+            'username': event['username'],
+            'reactions': event['reactions']
+        }))
 
     async def handle_edit_message(self, data):
         """Handle message editing"""
