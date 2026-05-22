@@ -340,12 +340,6 @@
             outline: none;
             border-color: #667eea;
         }
-        
-        /* Selected user highlight */
-        .member-item.selected {
-            background: #e0e7ff;
-            border-left: 3px solid #667eea;
-        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-purple-600 to-blue-500">
@@ -389,7 +383,7 @@
                 </button>
             </div>
             <div class="text-xs text-gray-400 mt-2">
-                <i class="fas fa-info-circle"></i> Press Enter to send | Click member count to add/remove members
+                <i class="fas fa-info-circle"></i> Press Enter to send | Click member count to add members
             </div>
         </div>
     </div>
@@ -418,10 +412,8 @@
         let typingTimeout;
         let currentRoomId = null;
         
-        // Available reactions
         const REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
         
-        // Get stored user info
         function getUserInfo() {
             const token = localStorage.getItem('access_token');
             const storedUsername = localStorage.getItem('chat_username');
@@ -447,7 +439,8 @@
             window.location.href = '/login/';
         }
         
-        // Member Modal Functions
+        // ============ MEMBER MANAGEMENT FUNCTIONS ============
+        
         function openMemberModal() {
             document.getElementById('memberModal').style.display = 'flex';
             loadRoomMembers();
@@ -518,7 +511,7 @@
                     container.innerHTML = html;
                 }
             } catch(e) {
-                console.error('Could not load room members:', e);
+                console.error('Error loading room members:', e);
                 container.innerHTML = '<div class="text-center text-red-500 py-4">Error loading members</div>';
             }
         }
@@ -537,7 +530,6 @@
             try {
                 const token = localStorage.getItem('access_token');
                 
-                // Fetch all registered users
                 const response = await fetch('/api/auth/users/', {
                     headers: token ? { 'Authorization': `Bearer ${token}` } : {}
                 });
@@ -548,7 +540,6 @@
                 
                 const users = await response.json();
                 
-                // Get current room members
                 const roomsResponse = await fetch('/api/rooms/', {
                     headers: token ? { 'Authorization': `Bearer ${token}` } : {}
                 });
@@ -566,67 +557,83 @@
                 
                 const roomMemberUsernames = roomMembers.map(m => m.username || m.user?.username);
                 
-                displayAllUsers(users, roomMemberUsernames);
+                const usersListContainer = document.getElementById('usersList');
                 
-                // Search functionality
+                const availableUsers = users.filter(user => 
+                    user.username !== username && !roomMemberUsernames.includes(user.username)
+                );
+                
+                if (availableUsers.length === 0) {
+                    usersListContainer.innerHTML = '<div class="text-center text-green-500 py-4">✓ All users are already in this room!</div>';
+                    return;
+                }
+                
+                let html = '';
+                for (const user of availableUsers) {
+                    const userName = user.username;
+                    const initial = userName.charAt(0).toUpperCase();
+                    html += `
+                        <div class="member-item">
+                            <div class="member-avatar">${initial}</div>
+                            <div class="member-info">
+                                <div class="member-name">${escapeHtml(userName)}</div>
+                                <div class="member-status">Click Add to invite to this room</div>
+                            </div>
+                            <button class="add-member-btn" onclick="addMemberToRoom('${escapeHtml(userName)}')">
+                                <i class="fas fa-user-plus"></i> Add
+                            </button>
+                        </div>
+                    `;
+                }
+                usersListContainer.innerHTML = html;
+                
+                // Search functionality - Fixed to avoid duplicate event listeners
                 const searchInput = document.getElementById('searchUsers');
                 if (searchInput) {
-                    searchInput.addEventListener('input', (e) => {
+                    // Remove existing listener by cloning and replacing
+                    const newSearchInput = searchInput.cloneNode(true);
+                    searchInput.parentNode.replaceChild(newSearchInput, searchInput);
+                    
+                    newSearchInput.addEventListener('input', (e) => {
                         const searchTerm = e.target.value.toLowerCase();
-                        const filteredUsers = users.filter(user => 
+                        const filteredUsers = availableUsers.filter(user => 
                             user.username.toLowerCase().includes(searchTerm)
                         );
-                        displayAllUsers(filteredUsers, roomMemberUsernames);
+                        let filteredHtml = '';
+                        if (filteredUsers.length === 0) {
+                            filteredHtml = '<div class="text-center text-gray-500 py-4">No users found</div>';
+                        } else {
+                            for (const user of filteredUsers) {
+                                const initial = user.username.charAt(0).toUpperCase();
+                                filteredHtml += `
+                                    <div class="member-item">
+                                        <div class="member-avatar">${initial}</div>
+                                        <div class="member-info">
+                                            <div class="member-name">${escapeHtml(user.username)}</div>
+                                            <div class="member-status">Click Add to invite to this room</div>
+                                        </div>
+                                        <button class="add-member-btn" onclick="addMemberToRoom('${escapeHtml(user.username)}')">
+                                            <i class="fas fa-user-plus"></i> Add
+                                        </button>
+                                    </div>
+                                `;
+                            }
+                        }
+                        usersListContainer.innerHTML = filteredHtml;
                     });
                 }
                 
             } catch(e) {
-                console.error('Could not load users:', e);
-                container.innerHTML = '<div class="text-center text-red-500 py-4">Error loading users. Please make sure the API endpoint exists.</div>';
+                console.error('Error loading users:', e);
+                const errorMsg = e.message === 'Failed to fetch users' 
+                    ? 'Error loading users. Please make sure the API endpoint exists.' 
+                    : `Error loading users: ${e.message}`;
+                container.innerHTML = `<div class="text-center text-red-500 py-4">${errorMsg}</div>`;
             }
-        }
-        
-        function displayAllUsers(users, roomMemberUsernames) {
-            const usersListContainer = document.getElementById('usersList');
-            
-            if (!users || users.length === 0) {
-                usersListContainer.innerHTML = '<div class="text-center text-gray-500 py-4">No users found</div>';
-                return;
-            }
-            
-            // Filter out current user and already added members
-            const availableUsers = users.filter(user => 
-                user.username !== username && !roomMemberUsernames.includes(user.username)
-            );
-            
-            if (availableUsers.length === 0) {
-                usersListContainer.innerHTML = '<div class="text-center text-green-500 py-4">✓ All users are already in this room!</div>';
-                return;
-            }
-            
-            let html = '';
-            for (const user of availableUsers) {
-                const userName = user.username;
-                const initial = userName.charAt(0).toUpperCase();
-                html += `
-                    <div class="member-item">
-                        <div class="member-avatar">${initial}</div>
-                        <div class="member-info">
-                            <div class="member-name">${escapeHtml(userName)}</div>
-                            <div class="member-status">Click Add to invite to this room</div>
-                        </div>
-                        <button class="add-member-btn" onclick="addMemberToRoom('${escapeHtml(userName)}')">
-                            <i class="fas fa-user-plus"></i> Add
-                        </button>
-                    </div>
-                `;
-            }
-            usersListContainer.innerHTML = html;
         }
         
         async function addMemberToRoom(userName) {
             if (!currentRoomId) {
-                // Get room ID
                 const token = localStorage.getItem('access_token');
                 const roomsResponse = await fetch('/api/rooms/', {
                     headers: token ? { 'Authorization': `Bearer ${token}` } : {}
@@ -639,7 +646,7 @@
             }
             
             if (currentRoomId) {
-                // Disable button temporarily to prevent double-click
+                // Disable the add button temporarily
                 const btns = document.querySelectorAll('.add-member-btn');
                 btns.forEach(btn => btn.disabled = true);
                 
@@ -665,21 +672,28 @@
                                 'username': 'System'
                             }));
                         }
-                        
                         addSystemMessage(`✅ ${userName} was added to the room!`);
                         
-                        // Refresh both tabs
-                        loadRoomMembers();
-                        updateMemberCount();
-                        loadAllUsers();
+                        // IMPORTANT: Refresh all data
+                        await updateMemberCount();
+                        await loadRoomMembers();
+                        
+                        // Refresh the Add Members tab to remove the added user from list
+                        const activeTab = document.querySelector('.member-tab.active');
+                        if (activeTab && activeTab.getAttribute('data-tab') === 'all-users') {
+                            await loadAllUsers();
+                        } else {
+                            // If we're on room members tab, still refresh add members in background
+                            loadAllUsers();
+                        }
                     } else {
                         addSystemMessage(`❌ Could not add ${userName}: ${data.error || 'Unknown error'}`);
                     }
                 } catch(e) {
                     console.error('Error adding member:', e);
-                    addSystemMessage(`❌ Could not add ${userName} to the room`);
+                    addSystemMessage(`❌ Could not add ${userName}`);
                 } finally {
-                    // Re-enable buttons
+                    // Re-enable buttons after 1 second
                     setTimeout(() => {
                         const btns = document.querySelectorAll('.add-member-btn');
                         btns.forEach(btn => btn.disabled = false);
@@ -688,16 +702,14 @@
             }
         }
         
-        // Track pending reactions to prevent duplicates
+        // ============ REACTION FUNCTIONS ============
+        
         let pendingReactions = new Set();
 
         function toggleReaction(messageId, reaction) {
             if (socket && socket.readyState === WebSocket.OPEN) {
                 const actionKey = `${messageId}_${reaction}`;
-                
-                if (pendingReactions.has(actionKey)) {
-                    return;
-                }
+                if (pendingReactions.has(actionKey)) return;
                 
                 const messageDiv = document.querySelector(`.message-item[data-id="${messageId}"]`);
                 if (messageDiv) {
@@ -723,15 +735,11 @@
                             const countSpan = reactionBtn.querySelector('.reaction-count');
                             if (countSpan) {
                                 let count = parseInt(countSpan.textContent);
-                                if (count > 0) {
-                                    countSpan.textContent = count - 1;
-                                }
+                                if (count > 0) countSpan.textContent = count - 1;
                                 if (count <= 1) {
                                     reactionBtn.remove();
                                     const container = messageDiv.querySelector('.reactions-container');
-                                    if (container && container.children.length === 0) {
-                                        container.remove();
-                                    }
+                                    if (container && container.children.length === 0) container.remove();
                                 }
                             }
                         } else {
@@ -744,16 +752,13 @@
                         }
                     }
                     
-                    setTimeout(() => {
-                        pendingReactions.delete(actionKey);
-                    }, 500);
+                    setTimeout(() => pendingReactions.delete(actionKey), 500);
                 }
             }
         }
         
         function showReactionPicker(messageId, event) {
             event.stopPropagation();
-            
             const existingPicker = document.querySelector('.reaction-picker');
             if (existingPicker) existingPicker.remove();
             
@@ -776,7 +781,6 @@
             picker.style.position = 'fixed';
             picker.style.bottom = (window.innerHeight - rect.top + 10) + 'px';
             picker.style.left = (rect.left - 60) + 'px';
-            
             document.body.appendChild(picker);
             
             setTimeout(() => {
@@ -789,19 +793,15 @@
             }, 100);
         }
         
-        // WebSocket connection
+        // ============ WEBSOCKET AND MESSAGE FUNCTIONS ============
+        
         function connectWebSocket() {
             const wsUrl = `ws://${window.location.host}/ws/chat/${roomName}/`;
             socket = new WebSocket(wsUrl);
             
-            socket.onopen = function() {
-                console.log('✅ Connected to chat as:', username);
-            };
-            
-            socket.onmessage = function(e) {
+            socket.onopen = () => console.log('✅ Connected to chat as:', username);
+            socket.onmessage = (e) => {
                 const data = JSON.parse(e.data);
-                console.log('Received:', data);
-                
                 if (data.type === 'message') {
                     displayMessage(data.username, data.message, data.timestamp, data.message_id, false, data.reactions);
                 } else if (data.type === 'file') {
@@ -818,15 +818,8 @@
                     handleReactionUpdate(data);
                 }
             };
-            
-            socket.onerror = function(error) {
-                console.error('WebSocket error:', error);
-            };
-            
-            socket.onclose = function() {
-                console.log('WebSocket disconnected');
-                setTimeout(connectWebSocket, 3000);
-            };
+            socket.onerror = (error) => console.error('WebSocket error:', error);
+            socket.onclose = () => setTimeout(connectWebSocket, 3000);
         }
         
         function displayMessage(msgUsername, message, timestamp, messageId, isEdited = false, reactions = {}) {
@@ -869,11 +862,7 @@
                     <div class="text-xs ${isMine ? 'text-purple-200' : 'text-gray-400'} mt-1">
                         ${timestamp ? new Date(timestamp).toLocaleTimeString() : new Date().toLocaleTimeString()}${editedMark}
                     </div>
-                    
-                    <div class="reaction-trigger" onclick="showReactionPicker('${messageId}', event)">
-                        😊
-                    </div>
-                    
+                    <div class="reaction-trigger" onclick="showReactionPicker('${messageId}', event)">😊</div>
                     ${isMine ? `
                         <div class="message-actions absolute -top-2 -right-2 space-x-1">
                             <button onclick="editMessage('${messageId}', '${escapeHtml(message).replace(/'/g, "\\'")}')" 
@@ -888,7 +877,6 @@
                     ` : ''}
                 </div>
             `;
-            
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
@@ -922,11 +910,7 @@
                     <div class="break-words">${escapeHtml(message)}</div>
                     ${contentHtml}
                     <div class="text-xs ${isMine ? 'text-purple-200' : 'text-gray-400'} mt-1">${timestamp ? new Date(timestamp).toLocaleTimeString() : new Date().toLocaleTimeString()}</div>
-                    
-                    <div class="reaction-trigger" onclick="showReactionPicker('${messageId}', event)">
-                        😊
-                    </div>
-                    
+                    <div class="reaction-trigger" onclick="showReactionPicker('${messageId}', event)">😊</div>
                     ${isMine ? `
                         <div class="message-actions absolute -top-2 -right-2 space-x-1">
                             <button onclick="deleteMessage('${messageId}')" 
@@ -937,7 +921,6 @@
                     ` : ''}
                 </div>
             `;
-            
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
@@ -967,9 +950,7 @@
                         reactionsContainer.outerHTML = newHtml;
                     } else {
                         const timestampDiv = messageDiv.querySelector('.text-xs');
-                        if (timestampDiv) {
-                            timestampDiv.insertAdjacentHTML('beforebegin', newHtml);
-                        }
+                        if (timestampDiv) timestampDiv.insertAdjacentHTML('beforebegin', newHtml);
                     }
                 } else if (reactionsContainer) {
                     reactionsContainer.remove();
@@ -1149,15 +1130,11 @@
                 const rooms = await roomsResponse.json();
                 const room = rooms.find(r => r.name === roomName);
                 if (room) {
-                    currentRoomId = room.id;
                     const membersResponse = await fetch(`/api/rooms/${room.id}/members/`, {
                         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
                     });
                     const members = await membersResponse.json();
-                    const memberCountSpan = document.getElementById('member-count-number');
-                    if (memberCountSpan) {
-                        memberCountSpan.innerHTML = members.length;
-                    }
+                    document.getElementById('member-count-number').innerHTML = members.length;
                     document.getElementById('member-count').innerHTML = `<i class="fas fa-users"></i> <span id="member-count-number">${members.length}</span> members`;
                 }
             } catch(e) {
