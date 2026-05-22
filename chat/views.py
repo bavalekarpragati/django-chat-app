@@ -353,3 +353,51 @@ class AddMemberToRoomView(APIView):
             return Response({'error': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+# chat/views.py - Add this class
+
+class RemoveMemberFromRoomView(APIView):
+    """Remove a user from a room"""
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, room_id):
+        username = request.data.get('username')
+        
+        if not username:
+            return Response(
+                {'error': 'Username is required'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            room = ChatRoom.objects.get(id=room_id)
+            user_to_remove = User.objects.get(username=username)
+            
+            # Check if user is in the room
+            if not RoomMember.objects.filter(room=room, user=user_to_remove).exists():
+                return Response(
+                    {'error': f'{username} is not a member of this room'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Remove user from room
+            RoomMember.objects.filter(room=room, user=user_to_remove).delete()
+            
+            # Create system message
+            Message.objects.create(
+                room=room,
+                user=request.user,
+                username='System',
+                text=f"{username} was removed from the room by {request.user.username}",
+                message_type='system'
+            )
+            
+            return Response({
+                'success': True,
+                'message': f'{username} removed from room'
+            }, status=status.HTTP_200_OK)
+            
+        except ChatRoom.DoesNotExist:
+            return Response({'error': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)

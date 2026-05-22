@@ -250,6 +250,7 @@
             padding: 12px;
             border-radius: 12px;
             transition: all 0.2s;
+            position: relative;
         }
         
         .member-item:hover {
@@ -300,7 +301,7 @@
             color: #1e40af;
         }
         
-        .add-member-btn {
+        .add-member-btn, .remove-member-btn {
             background: #667eea;
             color: white;
             border: none;
@@ -313,6 +314,15 @@
         
         .add-member-btn:hover {
             background: #5a67d8;
+            transform: scale(1.05);
+        }
+        
+        .remove-member-btn {
+            background: #ef4444;
+        }
+        
+        .remove-member-btn:hover {
+            background: #dc2626;
             transform: scale(1.05);
         }
         
@@ -383,7 +393,7 @@
                 </button>
             </div>
             <div class="text-xs text-gray-400 mt-2">
-                <i class="fas fa-info-circle"></i> Press Enter to send | Click member count to add members
+                <i class="fas fa-info-circle"></i> Press Enter to send | Click member count to manage members
             </div>
         </div>
     </div>
@@ -497,6 +507,7 @@
                     for (const member of members) {
                         const memberName = member.username || member.user?.username || 'Unknown';
                         const initial = memberName.charAt(0).toUpperCase();
+                        const isCurrentUser = memberName === username;
                         html += `
                             <div class="member-item">
                                 <div class="member-avatar">${initial}</div>
@@ -504,7 +515,10 @@
                                     <div class="member-name">${escapeHtml(memberName)}</div>
                                     <div class="member-status"><i class="fas fa-circle" style="font-size: 8px; color: #22c55e;"></i> Online</div>
                                 </div>
-                                ${memberName === username ? '<span class="member-badge room-member">You</span>' : ''}
+                                <div class="flex items-center gap-2">
+                                    ${isCurrentUser ? '<span class="member-badge room-member">You</span>' : ''}
+                                    ${!isCurrentUser ? `<button class="remove-member-btn" onclick="removeMemberFromRoom('${escapeHtml(memberName)}')"><i class="fas fa-user-minus"></i> Remove</button>` : ''}
+                                </div>
                             </div>
                         `;
                     }
@@ -587,10 +601,9 @@
                 }
                 usersListContainer.innerHTML = html;
                 
-                // Search functionality - Fixed to avoid duplicate event listeners
+                // Search functionality
                 const searchInput = document.getElementById('searchUsers');
                 if (searchInput) {
-                    // Remove existing listener by cloning and replacing
                     const newSearchInput = searchInput.cloneNode(true);
                     searchInput.parentNode.replaceChild(newSearchInput, searchInput);
                     
@@ -646,7 +659,6 @@
             }
             
             if (currentRoomId) {
-                // Disable the add button temporarily
                 const btns = document.querySelectorAll('.add-member-btn');
                 btns.forEach(btn => btn.disabled = true);
                 
@@ -664,7 +676,6 @@
                     const data = await response.json();
                     
                     if (response.ok) {
-                        // Send system message via WebSocket
                         if (socket && socket.readyState === WebSocket.OPEN) {
                             socket.send(JSON.stringify({
                                 'type': 'message',
@@ -674,16 +685,13 @@
                         }
                         addSystemMessage(`✅ ${userName} was added to the room!`);
                         
-                        // IMPORTANT: Refresh all data
                         await updateMemberCount();
                         await loadRoomMembers();
                         
-                        // Refresh the Add Members tab to remove the added user from list
                         const activeTab = document.querySelector('.member-tab.active');
                         if (activeTab && activeTab.getAttribute('data-tab') === 'all-users') {
                             await loadAllUsers();
                         } else {
-                            // If we're on room members tab, still refresh add members in background
                             loadAllUsers();
                         }
                     } else {
@@ -693,11 +701,66 @@
                     console.error('Error adding member:', e);
                     addSystemMessage(`❌ Could not add ${userName}`);
                 } finally {
-                    // Re-enable buttons after 1 second
                     setTimeout(() => {
                         const btns = document.querySelectorAll('.add-member-btn');
                         btns.forEach(btn => btn.disabled = false);
                     }, 1000);
+                }
+            }
+        }
+        
+        async function removeMemberFromRoom(userName) {
+            if (confirm(`Are you sure you want to remove ${userName} from this room?`)) {
+                if (!currentRoomId) {
+                    const token = localStorage.getItem('access_token');
+                    const roomsResponse = await fetch('/api/rooms/', {
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    });
+                    const rooms = await roomsResponse.json();
+                    const room = rooms.find(r => r.name === roomName);
+                    if (room) {
+                        currentRoomId = room.id;
+                    }
+                }
+                
+                if (currentRoomId) {
+                    try {
+                        const token = localStorage.getItem('access_token');
+                        const response = await fetch(`/api/rooms/${currentRoomId}/remove-member/`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ username: userName })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (response.ok) {
+                            if (socket && socket.readyState === WebSocket.OPEN) {
+                                socket.send(JSON.stringify({
+                                    'type': 'message',
+                                    'message': `${userName} was removed from the room!`,
+                                    'username': 'System'
+                                }));
+                            }
+                            addSystemMessage(`👋 ${userName} was removed from the room!`);
+                            
+                            await updateMemberCount();
+                            await loadRoomMembers();
+                            
+                            const activeTab = document.querySelector('.member-tab.active');
+                            if (activeTab && activeTab.getAttribute('data-tab') === 'all-users') {
+                                await loadAllUsers();
+                            }
+                        } else {
+                            addSystemMessage(`❌ Could not remove ${userName}: ${data.error || 'Unknown error'}`);
+                        }
+                    } catch(e) {
+                        console.error('Error removing member:', e);
+                        addSystemMessage(`❌ Could not remove ${userName}`);
+                    }
                 }
             }
         }

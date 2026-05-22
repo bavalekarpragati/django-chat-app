@@ -25,4 +25,5 @@ urlpatterns = [
     path('register/', TemplateView.as_view(template_name='accounts/register.html'), name='register'),
     path('api/upload/', upload_file, name='upload-file'),
     path('api/rooms/<int:room_id>/add-member/', views.AddMemberToRoomView.as_view(), name='add-member'),
+    path('api/rooms/<int:room_id>/remove-member/', views.RemoveMemberFromRoomView.as_view(), name='remove-member'),
 ]
