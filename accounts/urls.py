@@ -12,5 +12,6 @@ urlpatterns = [
     
     # Profile
     path('profile/', views.ProfileView.as_view(), name='profile'),
-    path('profile/<str:username>/', views.UserProfileView.as_view(), name='user_profile'),
+    
+    path('users/', views.UserListView.as_view(), name='user-list'),  # Add this line
 ]

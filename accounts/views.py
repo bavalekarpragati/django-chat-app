@@ -79,3 +79,18 @@ class UserProfileView(APIView):
             return Response(serializer.data)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+
+
+# Add at the end of the file
+from django.contrib.auth.models import User
+from rest_framework import generics
+from .serializers import UserSerializer
+
+class UserListView(generics.ListAPIView):
+    """Get all registered users"""
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserSerializer
+    
+    def get_queryset(self):
+        return User.objects.all().order_by('username')

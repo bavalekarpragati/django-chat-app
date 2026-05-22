@@ -16,7 +16,17 @@ SECRET_KEY = 'django-insecure-umga!9!9(c2^5otajmdw-mku2f#s_zp9^qf2g5r$2=)673_3-o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# myfirstbackend/settings.py
+
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+    '10.200.39.207',  # Your local IP
+    '10.200.39.53',   # Other device IP
+    '10.200.39.255',  # Network broadcast
+    '*',  # For testing only - remove in production
+]
 
 # Application definition
 INSTALLED_APPS = [

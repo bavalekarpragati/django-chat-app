@@ -299,3 +299,57 @@ def health_check(request):
             'api_health': '/api/health/'
         }
     })
+
+# chat/views.py - Add this at the end of the file
+
+from django.contrib.auth.models import User
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from .models import ChatRoom, RoomMember, Message
+
+from django.contrib.auth.models import User
+
+class AddMemberToRoomView(APIView):
+    """Add any registered user to a room"""
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, room_id):
+        username = request.data.get('username')
+        
+        if not username:
+            return Response(
+                {'error': 'Username is required'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            room = ChatRoom.objects.get(id=room_id)
+            user_to_add = User.objects.get(username=username)
+            
+            if RoomMember.objects.filter(room=room, user=user_to_add).exists():
+                return Response(
+                    {'error': f'{username} is already a member'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            RoomMember.objects.create(room=room, user=user_to_add)
+            
+            Message.objects.create(
+                room=room,
+                user=request.user,
+                username='System',
+                text=f"{username} was added to the room by {request.user.username}",
+                message_type='system'
+            )
+            
+            return Response({
+                'success': True,
+                'message': f'{username} added to room'
+            }, status=status.HTTP_201_CREATED)
+            
+        except ChatRoom.DoesNotExist:
+            return Response({'error': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
