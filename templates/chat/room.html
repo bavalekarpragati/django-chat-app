@@ -3,11 +3,20 @@
 <head>
     <title>Chat Room: {{ room_name }}</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* Base Styles */
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
         /* Message styling */
         .message-item {
             position: relative;
@@ -91,17 +100,28 @@
             font-weight: normal;
         }
         
-        /* Reaction picker */
+        /* ============ REACTION PICKER - RESPONSIVE FIX ============ */
         .reaction-picker {
-            position: fixed;
             background: white;
             border-radius: 40px;
             padding: 8px 12px;
             display: flex;
             gap: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            z-index: 10000;
             border: 1px solid #e2e8f0;
+            animation: fadeInScale 0.2s ease;
+        }
+        
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
         
         .reaction-picker-btn {
@@ -109,7 +129,7 @@
             border: none;
             font-size: 24px;
             cursor: pointer;
-            padding: 6px 10px;
+            padding: 8px 12px;
             border-radius: 50%;
             transition: all 0.2s;
         }
@@ -117,6 +137,76 @@
         .reaction-picker-btn:hover {
             background: #f0f0f0;
             transform: scale(1.2);
+        }
+        
+        /* Mobile Styles (up to 640px) */
+        @media (max-width: 640px) {
+            .reaction-picker {
+                position: fixed !important;
+                bottom: auto !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                flex-wrap: wrap;
+                width: 90%;
+                max-width: 300px;
+                justify-content: center;
+                border-radius: 20px;
+                padding: 15px;
+                gap: 10px;
+            }
+            
+            .reaction-picker-btn {
+                font-size: 32px !important;
+                padding: 10px 15px !important;
+                min-width: 55px;
+                min-height: 55px;
+            }
+        }
+        
+        /* Tablet Styles (641px - 768px) */
+        @media (min-width: 641px) and (max-width: 768px) {
+            .reaction-picker {
+                position: fixed !important;
+                bottom: auto !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                width: 80%;
+                max-width: 350px;
+                justify-content: center;
+                flex-wrap: wrap;
+                border-radius: 30px;
+                padding: 12px;
+            }
+            
+            .reaction-picker-btn {
+                font-size: 28px !important;
+                padding: 8px 14px !important;
+                min-width: 50px;
+                min-height: 50px;
+            }
+        }
+        
+        /* Small Desktop (769px - 1024px) */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .reaction-picker-btn {
+                font-size: 22px;
+                padding: 6px 10px;
+            }
+        }
+        
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .reaction-picker-btn {
+                min-width: 55px;
+                min-height: 55px;
+                font-size: 28px;
+            }
+            .reaction-picker {
+                padding: 12px 15px;
+                gap: 12px;
+            }
         }
         
         /* Custom scrollbar */
@@ -350,19 +440,246 @@
             outline: none;
             border-color: #667eea;
         }
+        
+        /* ============ RESPONSIVE DESIGN ============ */
+        
+        /* Mobile Devices (up to 640px) */
+        @media (max-width: 640px) {
+            .max-w-6xl {
+                max-width: 100%;
+            }
+            
+            .chat-header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+                padding: 12px !important;
+            }
+            
+            .chat-header h1 {
+                font-size: 16px;
+            }
+            
+            .chat-header .flex {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            #messages {
+                padding: 10px !important;
+            }
+            
+            .message-item .max-w-\[70\%\] {
+                max-width: 85%;
+            }
+            
+            .message-item .rounded-2xl {
+                padding: 8px 12px !important;
+            }
+            
+            .message-text {
+                font-size: 14px;
+            }
+            
+            .font-bold.text-sm {
+                font-size: 11px !important;
+            }
+            
+            .text-xs {
+                font-size: 9px !important;
+            }
+            
+            .reaction-trigger {
+                width: 22px;
+                height: 22px;
+                font-size: 10px;
+                bottom: -10px;
+                right: -10px;
+            }
+            
+            .reaction-badge {
+                font-size: 10px;
+                padding: 2px 6px;
+            }
+            
+            .reaction-emoji {
+                font-size: 12px;
+            }
+            
+            .bg-white.p-4 {
+                padding: 10px !important;
+            }
+            
+            .flex.space-x-2 {
+                gap: 6px;
+            }
+            
+            #file-btn, #send-btn {
+                padding: 8px 12px !important;
+                font-size: 12px !important;
+            }
+            
+            #message-text {
+                font-size: 14px;
+                padding: 8px !important;
+            }
+            
+            #typing-indicator {
+                font-size: 11px;
+                padding: 4px 10px !important;
+            }
+            
+            .bg-gray-200.text-gray-600 {
+                font-size: 11px !important;
+                padding: 4px 12px !important;
+            }
+            
+            .member-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
+            }
+            
+            .member-name {
+                font-size: 13px;
+            }
+            
+            .member-status {
+                font-size: 10px;
+            }
+            
+            .add-member-btn, .remove-member-btn {
+                padding: 4px 8px;
+                font-size: 10px;
+            }
+            
+            .member-modal-content {
+                width: 95%;
+                max-width: 95%;
+            }
+            
+            .text-sm {
+                font-size: 12px !important;
+            }
+            
+            .max-w-xs {
+                max-width: 150px;
+            }
+        }
+        
+        /* Tablet Devices (641px to 768px) */
+        @media (min-width: 641px) and (max-width: 768px) {
+            .max-w-6xl {
+                max-width: 100%;
+                margin: 0 10px;
+            }
+            
+            .message-item .max-w-\[70\%\] {
+                max-width: 75%;
+            }
+            
+            #message-text {
+                font-size: 15px;
+            }
+            
+            .chat-header h1 {
+                font-size: 18px;
+            }
+            
+            .member-modal-content {
+                width: 85%;
+                max-width: 450px;
+            }
+        }
+        
+        /* Desktop Devices (769px to 1024px) */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .max-w-6xl {
+                max-width: 95%;
+            }
+            
+            .message-item .max-w-\[70\%\] {
+                max-width: 65%;
+            }
+        }
+        
+        /* Large Desktop (1025px and above) */
+        @media (min-width: 1025px) {
+            .max-w-6xl {
+                max-width: 1200px;
+            }
+            
+            .message-item .max-w-\[70\%\] {
+                max-width: 60%;
+            }
+            
+            #messages {
+                padding: 24px !important;
+            }
+        }
+        
+        /* Landscape mode for mobile */
+        @media (max-width: 900px) and (orientation: landscape) {
+            .h-screen {
+                height: auto;
+                min-height: 100vh;
+            }
+            
+            #messages {
+                max-height: 50vh;
+            }
+        }
+        
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .message-actions {
+                display: flex !important;
+                opacity: 0.5;
+            }
+            
+            .reaction-trigger {
+                width: 32px;
+                height: 32px;
+            }
+            
+            .add-member-btn, .remove-member-btn {
+                padding: 6px 12px;
+            }
+        }
+        
+        /* Loading state */
+        .loading {
+            position: relative;
+        }
+        
+        .loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-purple-600 to-blue-500">
     <div class="max-w-6xl mx-auto h-screen flex flex-col">
         <!-- Chat Header -->
-        <div class="bg-white shadow-md rounded-t-2xl p-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
+        <div class="bg-white shadow-md rounded-t-2xl p-4 flex justify-between items-center chat-header">
+            <div class="flex items-center space-x-3 flex-wrap">
                 <h1 class="text-xl font-bold text-gray-800">💬 Chat Room: {{ room_name }}</h1>
                 <span id="member-count" class="text-sm text-gray-500 member-count-clickable" onclick="openMemberModal()">
                     <i class="fas fa-users"></i> <span id="member-count-number">0</span> members
                 </span>
             </div>
-            <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-4 flex-wrap">
                 <span id="current-user" class="text-sm text-purple-600 font-semibold"></span>
                 <a href="/" class="text-gray-500 hover:text-gray-700">← Back</a>
                 <button onclick="logout()" class="text-red-500 hover:text-red-700 text-sm">Logout</button>
@@ -382,17 +699,17 @@
             <div class="flex space-x-2">
                 <input type="file" id="file-input" class="hidden" accept="image/*,video/*,audio/*,application/pdf">
                 <button id="file-btn" class="bg-gray-500 text-white rounded-lg px-4 py-2 hover:bg-gray-600 transition">
-                    <i class="fas fa-paperclip"></i> Attach
+                    <i class="fas fa-paperclip"></i> <span class="hidden sm:inline">Attach</span>
                 </button>
                 <input type="text" id="message-text" 
                     class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-purple-500"
                     placeholder="Type your message..." autocomplete="off">
                 <button id="send-btn" 
                     class="bg-purple-600 text-white rounded-lg px-6 py-2 hover:bg-purple-700 transition">
-                    <i class="fas fa-paper-plane"></i> Send
+                    <i class="fas fa-paper-plane"></i> <span class="hidden sm:inline">Send</span>
                 </button>
             </div>
-            <div class="text-xs text-gray-400 mt-2">
+            <div class="text-xs text-gray-400 mt-2 text-center sm:text-left">
                 <i class="fas fa-info-circle"></i> Press Enter to send | Click member count to manage members
             </div>
         </div>
@@ -676,15 +993,6 @@
                     const data = await response.json();
                     
                     if (response.ok) {
-                        if (socket && socket.readyState === WebSocket.OPEN) {
-                            socket.send(JSON.stringify({
-                                'type': 'message',
-                                'message': `${userName} was added to the room!`,
-                                'username': 'System'
-                            }));
-                        }
-                        addSystemMessage(`✅ ${userName} was added to the room!`);
-                        
                         await updateMemberCount();
                         await loadRoomMembers();
                         
@@ -738,15 +1046,6 @@
                         const data = await response.json();
                         
                         if (response.ok) {
-                            if (socket && socket.readyState === WebSocket.OPEN) {
-                                socket.send(JSON.stringify({
-                                    'type': 'message',
-                                    'message': `${userName} was removed from the room!`,
-                                    'username': 'System'
-                                }));
-                            }
-                            addSystemMessage(`👋 ${userName} was removed from the room!`);
-                            
                             await updateMemberCount();
                             await loadRoomMembers();
                             
@@ -774,54 +1073,26 @@
                 const actionKey = `${messageId}_${reaction}`;
                 if (pendingReactions.has(actionKey)) return;
                 
-                const messageDiv = document.querySelector(`.message-item[data-id="${messageId}"]`);
-                if (messageDiv) {
-                    const reactionBtn = Array.from(messageDiv.querySelectorAll('.reaction-badge')).find(
-                        btn => btn.querySelector('.reaction-emoji')?.textContent === reaction
-                    );
-                    const isActive = reactionBtn && reactionBtn.classList.contains('active');
-                    const action = isActive ? 'remove' : 'add';
-                    
-                    pendingReactions.add(actionKey);
-                    
-                    socket.send(JSON.stringify({
-                        'type': 'reaction',
-                        'message_id': messageId,
-                        'reaction': reaction,
-                        'reaction_action': action,
-                        'username': username
-                    }));
-                    
-                    if (reactionBtn) {
-                        if (action === 'remove') {
-                            reactionBtn.classList.remove('active');
-                            const countSpan = reactionBtn.querySelector('.reaction-count');
-                            if (countSpan) {
-                                let count = parseInt(countSpan.textContent);
-                                if (count > 0) countSpan.textContent = count - 1;
-                                if (count <= 1) {
-                                    reactionBtn.remove();
-                                    const container = messageDiv.querySelector('.reactions-container');
-                                    if (container && container.children.length === 0) container.remove();
-                                }
-                            }
-                        } else {
-                            reactionBtn.classList.add('active');
-                            const countSpan = reactionBtn.querySelector('.reaction-count');
-                            if (countSpan) {
-                                let count = parseInt(countSpan.textContent);
-                                countSpan.textContent = count + 1;
-                            }
-                        }
-                    }
-                    
-                    setTimeout(() => pendingReactions.delete(actionKey), 500);
-                }
+                pendingReactions.add(actionKey);
+                
+                // Send reaction to server
+                socket.send(JSON.stringify({
+                    'type': 'reaction',
+                    'message_id': messageId,
+                    'reaction': reaction,
+                    'reaction_action': 'toggle',
+                    'username': username
+                }));
+                
+                setTimeout(() => pendingReactions.delete(actionKey), 500);
             }
         }
         
+        // FIXED: Improved reaction picker with proper boundary detection for laptop/desktop
         function showReactionPicker(messageId, event) {
             event.stopPropagation();
+            
+            // Remove existing picker
             const existingPicker = document.querySelector('.reaction-picker');
             if (existingPicker) existingPicker.remove();
             
@@ -840,22 +1111,29 @@
                 picker.appendChild(btn);
             });
             
-            const rect = event.target.getBoundingClientRect();
+            // Center on screen - works for ALL devices
             picker.style.position = 'fixed';
-            picker.style.bottom = (window.innerHeight - rect.top + 10) + 'px';
-            picker.style.left = (rect.left - 60) + 'px';
+            picker.style.top = '50%';
+            picker.style.left = '50%';
+            picker.style.transform = 'translate(-50%, -50%)';
+            picker.style.zIndex = '10000';
+            
             document.body.appendChild(picker);
             
+            // Close picker when clicking outside
             setTimeout(() => {
-                document.addEventListener('click', function closePicker(e) {
+                function closePicker(e) {
                     if (!picker.contains(e.target)) {
                         picker.remove();
                         document.removeEventListener('click', closePicker);
+                        document.removeEventListener('scroll', closePicker);
                     }
-                });
+                }
+                document.addEventListener('click', closePicker);
+                document.addEventListener('scroll', closePicker);
             }, 100);
         }
-        
+                
         // ============ WEBSOCKET AND MESSAGE FUNCTIONS ============
         
         function connectWebSocket() {
@@ -865,8 +1143,10 @@
             socket.onopen = () => console.log('✅ Connected to chat as:', username);
             socket.onmessage = (e) => {
                 const data = JSON.parse(e.data);
+                console.log('Received:', data);
+                
                 if (data.type === 'message') {
-                    displayMessage(data.username, data.message, data.timestamp, data.message_id, false, data.reactions);
+                    displayMessage(data.username, data.message, data.timestamp, data.message_id, false, data.reactions || {});
                 } else if (data.type === 'file') {
                     displayFileMessage(data.username, data.message, data.file_url, data.file_type, data.file_name, data.timestamp, data.message_id);
                 } else if (data.type === 'system') {
@@ -885,6 +1165,40 @@
             socket.onclose = () => setTimeout(connectWebSocket, 3000);
         }
         
+        function handleReactionUpdate(data) {
+            const messageDiv = document.querySelector(`.message-item[data-id="${data.message_id}"]`);
+            if (messageDiv) {
+                let reactionsContainer = messageDiv.querySelector('.reactions-container');
+                
+                if (data.reactions && Object.keys(data.reactions).length > 0) {
+                    let newHtml = '<div class="reactions-container">';
+                    for (const [reaction, count] of Object.entries(data.reactions)) {
+                        newHtml += `
+                            <button class="reaction-badge" onclick="toggleReaction('${data.message_id}', '${reaction}')">
+                                <span class="reaction-emoji">${reaction}</span>
+                                <span class="reaction-count">${count}</span>
+                            </button>
+                        `;
+                    }
+                    newHtml += '</div>';
+                    
+                    if (reactionsContainer) {
+                        reactionsContainer.outerHTML = newHtml;
+                    } else {
+                        const contentDiv = messageDiv.querySelector('.max-w-\\[70\\%\\]');
+                        if (contentDiv) {
+                            const timestampDiv = contentDiv.querySelector('.text-xs');
+                            if (timestampDiv) {
+                                timestampDiv.insertAdjacentHTML('beforebegin', newHtml);
+                            }
+                        }
+                    }
+                } else if (reactionsContainer) {
+                    reactionsContainer.remove();
+                }
+            }
+        }
+        
         function displayMessage(msgUsername, message, timestamp, messageId, isEdited = false, reactions = {}) {
             const messagesDiv = document.getElementById('messages');
             const isMine = msgUsername === username;
@@ -897,16 +1211,13 @@
             messageDiv.className = `message-item flex ${isMine ? 'justify-end' : 'justify-start'} mb-4`;
             messageDiv.setAttribute('data-id', messageId || '');
             
+            // Build reactions HTML
             let reactionsHtml = '';
             if (reactions && Object.keys(reactions).length > 0) {
                 reactionsHtml = '<div class="reactions-container">';
-                for (const [reaction, users] of Object.entries(reactions)) {
-                    const userList = Array.isArray(users) ? users : [];
-                    const count = userList.length;
-                    const hasUserReacted = userList.includes(username);
+                for (const [reaction, count] of Object.entries(reactions)) {
                     reactionsHtml += `
-                        <button class="reaction-badge ${hasUserReacted ? 'active' : ''}" 
-                                onclick="toggleReaction('${messageId}', '${reaction}')">
+                        <button class="reaction-badge" onclick="toggleReaction('${messageId}', '${reaction}')">
                             <span class="reaction-emoji">${reaction}</span>
                             <span class="reaction-count">${count}</span>
                         </button>
@@ -986,39 +1297,6 @@
             `;
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-        
-        function handleReactionUpdate(data) {
-            const messageDiv = document.querySelector(`.message-item[data-id="${data.message_id}"]`);
-            if (messageDiv) {
-                let reactionsContainer = messageDiv.querySelector('.reactions-container');
-                
-                if (data.reactions && Object.keys(data.reactions).length > 0) {
-                    let newHtml = '<div class="reactions-container">';
-                    for (const [reaction, users] of Object.entries(data.reactions)) {
-                        const userList = Array.isArray(users) ? users : [];
-                        const count = userList.length;
-                        const hasUserReacted = userList.includes(username);
-                        newHtml += `
-                            <button class="reaction-badge ${hasUserReacted ? 'active' : ''}" 
-                                    onclick="toggleReaction('${data.message_id}', '${reaction}')">
-                                <span class="reaction-emoji">${reaction}</span>
-                                <span class="reaction-count">${count}</span>
-                            </button>
-                        `;
-                    }
-                    newHtml += '</div>';
-                    
-                    if (reactionsContainer) {
-                        reactionsContainer.outerHTML = newHtml;
-                    } else {
-                        const timestampDiv = messageDiv.querySelector('.text-xs');
-                        if (timestampDiv) timestampDiv.insertAdjacentHTML('beforebegin', newHtml);
-                    }
-                } else if (reactionsContainer) {
-                    reactionsContainer.remove();
-                }
-            }
         }
         
         function handleMessageEdit(data) {
@@ -1174,7 +1452,7 @@
                             if (msg.message_type === 'image' || msg.message_type === 'video' || msg.message_type === 'audio' || msg.message_type === 'file') {
                                 displayFileMessage(msg.username, msg.text, msg.file_url, msg.message_type, msg.file_name, msg.timestamp, msg.id);
                             } else {
-                                displayMessage(msg.username, msg.text, msg.timestamp, msg.id, msg.edited_at !== null, msg.reactions);
+                                displayMessage(msg.username, msg.text, msg.timestamp, msg.id, msg.edited_at !== null, msg.reactions || {});
                             }
                         });
                     }
@@ -1231,6 +1509,7 @@
             setupEventListeners();
             setupFileUpload();
         }
+
         
         init();
         setInterval(updateMemberCount, 30000);
