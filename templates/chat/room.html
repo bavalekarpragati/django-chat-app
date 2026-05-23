@@ -8,15 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Base Styles */
-        * {
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-        }
-        
         /* Message styling */
         .message-item {
             position: relative;
@@ -100,8 +91,9 @@
             font-weight: normal;
         }
         
-        /* ============ REACTION PICKER - RESPONSIVE FIX ============ */
+        /* Reaction picker */
         .reaction-picker {
+            position: fixed;
             background: white;
             border-radius: 40px;
             padding: 8px 12px;
@@ -139,7 +131,7 @@
             transform: scale(1.2);
         }
         
-        /* Mobile Styles (up to 640px) */
+        /* Mobile Styles for reaction picker */
         @media (max-width: 640px) {
             .reaction-picker {
                 position: fixed !important;
@@ -161,51 +153,6 @@
                 padding: 10px 15px !important;
                 min-width: 55px;
                 min-height: 55px;
-            }
-        }
-        
-        /* Tablet Styles (641px - 768px) */
-        @media (min-width: 641px) and (max-width: 768px) {
-            .reaction-picker {
-                position: fixed !important;
-                bottom: auto !important;
-                top: 50% !important;
-                left: 50% !important;
-                transform: translate(-50%, -50%) !important;
-                width: 80%;
-                max-width: 350px;
-                justify-content: center;
-                flex-wrap: wrap;
-                border-radius: 30px;
-                padding: 12px;
-            }
-            
-            .reaction-picker-btn {
-                font-size: 28px !important;
-                padding: 8px 14px !important;
-                min-width: 50px;
-                min-height: 50px;
-            }
-        }
-        
-        /* Small Desktop (769px - 1024px) */
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .reaction-picker-btn {
-                font-size: 22px;
-                padding: 6px 10px;
-            }
-        }
-        
-        /* Touch device optimizations */
-        @media (hover: none) and (pointer: coarse) {
-            .reaction-picker-btn {
-                min-width: 55px;
-                min-height: 55px;
-                font-size: 28px;
-            }
-            .reaction-picker {
-                padding: 12px 15px;
-                gap: 12px;
             }
         }
         
@@ -441,9 +388,7 @@
             border-color: #667eea;
         }
         
-        /* ============ RESPONSIVE DESIGN ============ */
-        
-        /* Mobile Devices (up to 640px) */
+        /* Responsive Design */
         @media (max-width: 640px) {
             .max-w-6xl {
                 max-width: 100%;
@@ -460,33 +405,8 @@
                 font-size: 16px;
             }
             
-            .chat-header .flex {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            
-            #messages {
-                padding: 10px !important;
-            }
-            
             .message-item .max-w-\[70\%\] {
                 max-width: 85%;
-            }
-            
-            .message-item .rounded-2xl {
-                padding: 8px 12px !important;
-            }
-            
-            .message-text {
-                font-size: 14px;
-            }
-            
-            .font-bold.text-sm {
-                font-size: 11px !important;
-            }
-            
-            .text-xs {
-                font-size: 9px !important;
             }
             
             .reaction-trigger {
@@ -502,16 +422,8 @@
                 padding: 2px 6px;
             }
             
-            .reaction-emoji {
-                font-size: 12px;
-            }
-            
             .bg-white.p-4 {
                 padding: 10px !important;
-            }
-            
-            .flex.space-x-2 {
-                gap: 6px;
             }
             
             #file-btn, #send-btn {
@@ -524,148 +436,11 @@
                 padding: 8px !important;
             }
             
-            #typing-indicator {
-                font-size: 11px;
-                padding: 4px 10px !important;
-            }
-            
-            .bg-gray-200.text-gray-600 {
-                font-size: 11px !important;
-                padding: 4px 12px !important;
-            }
-            
             .member-avatar {
                 width: 40px;
                 height: 40px;
                 font-size: 14px;
             }
-            
-            .member-name {
-                font-size: 13px;
-            }
-            
-            .member-status {
-                font-size: 10px;
-            }
-            
-            .add-member-btn, .remove-member-btn {
-                padding: 4px 8px;
-                font-size: 10px;
-            }
-            
-            .member-modal-content {
-                width: 95%;
-                max-width: 95%;
-            }
-            
-            .text-sm {
-                font-size: 12px !important;
-            }
-            
-            .max-w-xs {
-                max-width: 150px;
-            }
-        }
-        
-        /* Tablet Devices (641px to 768px) */
-        @media (min-width: 641px) and (max-width: 768px) {
-            .max-w-6xl {
-                max-width: 100%;
-                margin: 0 10px;
-            }
-            
-            .message-item .max-w-\[70\%\] {
-                max-width: 75%;
-            }
-            
-            #message-text {
-                font-size: 15px;
-            }
-            
-            .chat-header h1 {
-                font-size: 18px;
-            }
-            
-            .member-modal-content {
-                width: 85%;
-                max-width: 450px;
-            }
-        }
-        
-        /* Desktop Devices (769px to 1024px) */
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .max-w-6xl {
-                max-width: 95%;
-            }
-            
-            .message-item .max-w-\[70\%\] {
-                max-width: 65%;
-            }
-        }
-        
-        /* Large Desktop (1025px and above) */
-        @media (min-width: 1025px) {
-            .max-w-6xl {
-                max-width: 1200px;
-            }
-            
-            .message-item .max-w-\[70\%\] {
-                max-width: 60%;
-            }
-            
-            #messages {
-                padding: 24px !important;
-            }
-        }
-        
-        /* Landscape mode for mobile */
-        @media (max-width: 900px) and (orientation: landscape) {
-            .h-screen {
-                height: auto;
-                min-height: 100vh;
-            }
-            
-            #messages {
-                max-height: 50vh;
-            }
-        }
-        
-        /* Touch device optimizations */
-        @media (hover: none) and (pointer: coarse) {
-            .message-actions {
-                display: flex !important;
-                opacity: 0.5;
-            }
-            
-            .reaction-trigger {
-                width: 32px;
-                height: 32px;
-            }
-            
-            .add-member-btn, .remove-member-btn {
-                padding: 6px 12px;
-            }
-        }
-        
-        /* Loading state */
-        .loading {
-            position: relative;
-        }
-        
-        .loading::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -710,7 +485,7 @@
                 </button>
             </div>
             <div class="text-xs text-gray-400 mt-2 text-center sm:text-left">
-                <i class="fas fa-info-circle"></i> Press Enter to send | Click member count to manage members
+                <i class="fas fa-info-circle"></i> Press Enter to send | Click 😊 to add reaction
             </div>
         </div>
     </div>
@@ -766,333 +541,35 @@
             window.location.href = '/login/';
         }
         
-        // ============ MEMBER MANAGEMENT FUNCTIONS ============
-        
-        function openMemberModal() {
-            document.getElementById('memberModal').style.display = 'flex';
-            loadRoomMembers();
-        }
-        
-        function closeMemberModal() {
-            document.getElementById('memberModal').style.display = 'none';
-        }
-        
-        function closeMemberModalOnOutside(event) {
-            if (event.target === document.getElementById('memberModal')) {
-                closeMemberModal();
-            }
-        }
-        
-        function switchTab(tabName) {
-            document.querySelectorAll('.member-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelector(`.member-tab[data-tab="${tabName}"]`).classList.add('active');
-            
-            if (tabName === 'room-members') {
-                loadRoomMembers();
-            } else {
-                loadAllUsers();
-            }
-        }
-        
-        async function loadRoomMembers() {
-            const container = document.getElementById('member-list-container');
-            container.innerHTML = '<div class="text-center text-gray-500 py-4">Loading room members...</div>';
-            
-            try {
-                const token = localStorage.getItem('access_token');
-                const roomsResponse = await fetch('/api/rooms/', {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-                });
-                const rooms = await roomsResponse.json();
-                const room = rooms.find(r => r.name === roomName);
-                
-                if (room) {
-                    currentRoomId = room.id;
-                    const membersResponse = await fetch(`/api/rooms/${room.id}/members/`, {
-                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-                    });
-                    const members = await membersResponse.json();
-                    
-                    if (members.length === 0) {
-                        container.innerHTML = '<div class="text-center text-gray-500 py-4">No members in this room yet</div>';
-                        return;
-                    }
-                    
-                    let html = '';
-                    for (const member of members) {
-                        const memberName = member.username || member.user?.username || 'Unknown';
-                        const initial = memberName.charAt(0).toUpperCase();
-                        const isCurrentUser = memberName === username;
-                        html += `
-                            <div class="member-item">
-                                <div class="member-avatar">${initial}</div>
-                                <div class="member-info">
-                                    <div class="member-name">${escapeHtml(memberName)}</div>
-                                    <div class="member-status"><i class="fas fa-circle" style="font-size: 8px; color: #22c55e;"></i> Online</div>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    ${isCurrentUser ? '<span class="member-badge room-member">You</span>' : ''}
-                                    ${!isCurrentUser ? `<button class="remove-member-btn" onclick="removeMemberFromRoom('${escapeHtml(memberName)}')"><i class="fas fa-user-minus"></i> Remove</button>` : ''}
-                                </div>
-                            </div>
-                        `;
-                    }
-                    container.innerHTML = html;
-                }
-            } catch(e) {
-                console.error('Error loading room members:', e);
-                container.innerHTML = '<div class="text-center text-red-500 py-4">Error loading members</div>';
-            }
-        }
-        
-        async function loadAllUsers() {
-            const container = document.getElementById('member-list-container');
-            container.innerHTML = `
-                <div class="px-4 pt-4">
-                    <input type="text" id="searchUsers" class="search-members" placeholder="Search users by name...">
-                </div>
-                <div id="usersList" class="p-4">
-                    <div class="text-center text-gray-500 py-4">Loading users...</div>
-                </div>
-            `;
-            
-            try {
-                const token = localStorage.getItem('access_token');
-                
-                const response = await fetch('/api/auth/users/', {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Failed to fetch users');
-                }
-                
-                const users = await response.json();
-                
-                const roomsResponse = await fetch('/api/rooms/', {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-                });
-                const rooms = await roomsResponse.json();
-                const room = rooms.find(r => r.name === roomName);
-                
-                let roomMembers = [];
-                if (room) {
-                    currentRoomId = room.id;
-                    const membersResponse = await fetch(`/api/rooms/${room.id}/members/`, {
-                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-                    });
-                    roomMembers = await membersResponse.json();
-                }
-                
-                const roomMemberUsernames = roomMembers.map(m => m.username || m.user?.username);
-                
-                const usersListContainer = document.getElementById('usersList');
-                
-                const availableUsers = users.filter(user => 
-                    user.username !== username && !roomMemberUsernames.includes(user.username)
-                );
-                
-                if (availableUsers.length === 0) {
-                    usersListContainer.innerHTML = '<div class="text-center text-green-500 py-4">✓ All users are already in this room!</div>';
-                    return;
-                }
-                
-                let html = '';
-                for (const user of availableUsers) {
-                    const userName = user.username;
-                    const initial = userName.charAt(0).toUpperCase();
-                    html += `
-                        <div class="member-item">
-                            <div class="member-avatar">${initial}</div>
-                            <div class="member-info">
-                                <div class="member-name">${escapeHtml(userName)}</div>
-                                <div class="member-status">Click Add to invite to this room</div>
-                            </div>
-                            <button class="add-member-btn" onclick="addMemberToRoom('${escapeHtml(userName)}')">
-                                <i class="fas fa-user-plus"></i> Add
-                            </button>
-                        </div>
-                    `;
-                }
-                usersListContainer.innerHTML = html;
-                
-                // Search functionality
-                const searchInput = document.getElementById('searchUsers');
-                if (searchInput) {
-                    const newSearchInput = searchInput.cloneNode(true);
-                    searchInput.parentNode.replaceChild(newSearchInput, searchInput);
-                    
-                    newSearchInput.addEventListener('input', (e) => {
-                        const searchTerm = e.target.value.toLowerCase();
-                        const filteredUsers = availableUsers.filter(user => 
-                            user.username.toLowerCase().includes(searchTerm)
-                        );
-                        let filteredHtml = '';
-                        if (filteredUsers.length === 0) {
-                            filteredHtml = '<div class="text-center text-gray-500 py-4">No users found</div>';
-                        } else {
-                            for (const user of filteredUsers) {
-                                const initial = user.username.charAt(0).toUpperCase();
-                                filteredHtml += `
-                                    <div class="member-item">
-                                        <div class="member-avatar">${initial}</div>
-                                        <div class="member-info">
-                                            <div class="member-name">${escapeHtml(user.username)}</div>
-                                            <div class="member-status">Click Add to invite to this room</div>
-                                        </div>
-                                        <button class="add-member-btn" onclick="addMemberToRoom('${escapeHtml(user.username)}')">
-                                            <i class="fas fa-user-plus"></i> Add
-                                        </button>
-                                    </div>
-                                `;
-                            }
-                        }
-                        usersListContainer.innerHTML = filteredHtml;
-                    });
-                }
-                
-            } catch(e) {
-                console.error('Error loading users:', e);
-                const errorMsg = e.message === 'Failed to fetch users' 
-                    ? 'Error loading users. Please make sure the API endpoint exists.' 
-                    : `Error loading users: ${e.message}`;
-                container.innerHTML = `<div class="text-center text-red-500 py-4">${errorMsg}</div>`;
-            }
-        }
-        
-        async function addMemberToRoom(userName) {
-            if (!currentRoomId) {
-                const token = localStorage.getItem('access_token');
-                const roomsResponse = await fetch('/api/rooms/', {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-                });
-                const rooms = await roomsResponse.json();
-                const room = rooms.find(r => r.name === roomName);
-                if (room) {
-                    currentRoomId = room.id;
-                }
-            }
-            
-            if (currentRoomId) {
-                const btns = document.querySelectorAll('.add-member-btn');
-                btns.forEach(btn => btn.disabled = true);
-                
-                try {
-                    const token = localStorage.getItem('access_token');
-                    const response = await fetch(`/api/rooms/${currentRoomId}/add-member/`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ username: userName })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (response.ok) {
-                        await updateMemberCount();
-                        await loadRoomMembers();
-                        
-                        const activeTab = document.querySelector('.member-tab.active');
-                        if (activeTab && activeTab.getAttribute('data-tab') === 'all-users') {
-                            await loadAllUsers();
-                        } else {
-                            loadAllUsers();
-                        }
-                    } else {
-                        addSystemMessage(`❌ Could not add ${userName}: ${data.error || 'Unknown error'}`);
-                    }
-                } catch(e) {
-                    console.error('Error adding member:', e);
-                    addSystemMessage(`❌ Could not add ${userName}`);
-                } finally {
-                    setTimeout(() => {
-                        const btns = document.querySelectorAll('.add-member-btn');
-                        btns.forEach(btn => btn.disabled = false);
-                    }, 1000);
-                }
-            }
-        }
-        
-        async function removeMemberFromRoom(userName) {
-            if (confirm(`Are you sure you want to remove ${userName} from this room?`)) {
-                if (!currentRoomId) {
-                    const token = localStorage.getItem('access_token');
-                    const roomsResponse = await fetch('/api/rooms/', {
-                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-                    });
-                    const rooms = await roomsResponse.json();
-                    const room = rooms.find(r => r.name === roomName);
-                    if (room) {
-                        currentRoomId = room.id;
-                    }
-                }
-                
-                if (currentRoomId) {
-                    try {
-                        const token = localStorage.getItem('access_token');
-                        const response = await fetch(`/api/rooms/${currentRoomId}/remove-member/`, {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ username: userName })
-                        });
-                        
-                        const data = await response.json();
-                        
-                        if (response.ok) {
-                            await updateMemberCount();
-                            await loadRoomMembers();
-                            
-                            const activeTab = document.querySelector('.member-tab.active');
-                            if (activeTab && activeTab.getAttribute('data-tab') === 'all-users') {
-                                await loadAllUsers();
-                            }
-                        } else {
-                            addSystemMessage(`❌ Could not remove ${userName}: ${data.error || 'Unknown error'}`);
-                        }
-                    } catch(e) {
-                        console.error('Error removing member:', e);
-                        addSystemMessage(`❌ Could not remove ${userName}`);
-                    }
-                }
-            }
-        }
-        
         // ============ REACTION FUNCTIONS ============
         
-        let pendingReactions = new Set();
-
-        function toggleReaction(messageId, reaction) {
+        function addReaction(messageId, reaction) {
             if (socket && socket.readyState === WebSocket.OPEN) {
-                const actionKey = `${messageId}_${reaction}`;
-                if (pendingReactions.has(actionKey)) return;
-                
-                pendingReactions.add(actionKey);
-                
-                // Send reaction to server
                 socket.send(JSON.stringify({
                     'type': 'reaction',
                     'message_id': messageId,
                     'reaction': reaction,
-                    'reaction_action': 'toggle',
+                    'reaction_action': 'add',
                     'username': username
                 }));
-                
-                setTimeout(() => pendingReactions.delete(actionKey), 500);
             }
         }
-        
-        // FIXED: Improved reaction picker with proper boundary detection for laptop/desktop
+
+        function removeReaction(messageId, reaction) {
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({
+                    'type': 'reaction',
+                    'message_id': messageId,
+                    'reaction': reaction,
+                    'reaction_action': 'remove',
+                    'username': username
+                }));
+            }
+        }
+
         function showReactionPicker(messageId, event) {
             event.stopPropagation();
             
-            // Remove existing picker
             const existingPicker = document.querySelector('.reaction-picker');
             if (existingPicker) existingPicker.remove();
             
@@ -1105,35 +582,71 @@
                 btn.className = 'reaction-picker-btn';
                 btn.onclick = (e) => {
                     e.stopPropagation();
-                    toggleReaction(messageId, reaction);
+                    addReaction(messageId, reaction);
                     picker.remove();
                 };
                 picker.appendChild(btn);
             });
             
-            // Center on screen - works for ALL devices
             picker.style.position = 'fixed';
             picker.style.top = '50%';
             picker.style.left = '50%';
             picker.style.transform = 'translate(-50%, -50%)';
             picker.style.zIndex = '10000';
+            picker.style.backgroundColor = 'white';
+            picker.style.borderRadius = '40px';
+            picker.style.padding = '8px 12px';
+            picker.style.display = 'flex';
+            picker.style.gap = '8px';
+            picker.style.boxShadow = '0 4px 20px rgba(0,0,0,0.2)';
             
             document.body.appendChild(picker);
             
-            // Close picker when clicking outside
             setTimeout(() => {
                 function closePicker(e) {
                     if (!picker.contains(e.target)) {
                         picker.remove();
                         document.removeEventListener('click', closePicker);
-                        document.removeEventListener('scroll', closePicker);
                     }
                 }
                 document.addEventListener('click', closePicker);
-                document.addEventListener('scroll', closePicker);
             }, 100);
         }
+
+        function handleReactionUpdate(data) {
+            const messageDiv = document.querySelector(`.message-item[data-id="${data.message_id}"]`);
+            if (messageDiv) {
+                let reactionsContainer = messageDiv.querySelector('.reactions-container');
                 
+                if (data.reactions && Object.keys(data.reactions).length > 0) {
+                    let newHtml = '<div class="reactions-container">';
+                    for (const [reaction, count] of Object.entries(data.reactions)) {
+                        newHtml += `
+                            <button class="reaction-badge" onclick="removeReaction('${data.message_id}', '${reaction}')">
+                                <span class="reaction-emoji">${reaction}</span>
+                                <span class="reaction-count">${count}</span>
+                            </button>
+                        `;
+                    }
+                    newHtml += '</div>';
+                    
+                    if (reactionsContainer) {
+                        reactionsContainer.outerHTML = newHtml;
+                    } else {
+                        const contentDiv = messageDiv.querySelector('.max-w-\\[70\\%\\]');
+                        if (contentDiv) {
+                            const timestampDiv = contentDiv.querySelector('.text-xs');
+                            if (timestampDiv) {
+                                timestampDiv.insertAdjacentHTML('beforebegin', newHtml);
+                            }
+                        }
+                    }
+                } else if (reactionsContainer) {
+                    reactionsContainer.remove();
+                }
+            }
+        }
+        
         // ============ WEBSOCKET AND MESSAGE FUNCTIONS ============
         
         function connectWebSocket() {
@@ -1165,40 +678,6 @@
             socket.onclose = () => setTimeout(connectWebSocket, 3000);
         }
         
-        function handleReactionUpdate(data) {
-            const messageDiv = document.querySelector(`.message-item[data-id="${data.message_id}"]`);
-            if (messageDiv) {
-                let reactionsContainer = messageDiv.querySelector('.reactions-container');
-                
-                if (data.reactions && Object.keys(data.reactions).length > 0) {
-                    let newHtml = '<div class="reactions-container">';
-                    for (const [reaction, count] of Object.entries(data.reactions)) {
-                        newHtml += `
-                            <button class="reaction-badge" onclick="toggleReaction('${data.message_id}', '${reaction}')">
-                                <span class="reaction-emoji">${reaction}</span>
-                                <span class="reaction-count">${count}</span>
-                            </button>
-                        `;
-                    }
-                    newHtml += '</div>';
-                    
-                    if (reactionsContainer) {
-                        reactionsContainer.outerHTML = newHtml;
-                    } else {
-                        const contentDiv = messageDiv.querySelector('.max-w-\\[70\\%\\]');
-                        if (contentDiv) {
-                            const timestampDiv = contentDiv.querySelector('.text-xs');
-                            if (timestampDiv) {
-                                timestampDiv.insertAdjacentHTML('beforebegin', newHtml);
-                            }
-                        }
-                    }
-                } else if (reactionsContainer) {
-                    reactionsContainer.remove();
-                }
-            }
-        }
-        
         function displayMessage(msgUsername, message, timestamp, messageId, isEdited = false, reactions = {}) {
             const messagesDiv = document.getElementById('messages');
             const isMine = msgUsername === username;
@@ -1211,13 +690,12 @@
             messageDiv.className = `message-item flex ${isMine ? 'justify-end' : 'justify-start'} mb-4`;
             messageDiv.setAttribute('data-id', messageId || '');
             
-            // Build reactions HTML
             let reactionsHtml = '';
             if (reactions && Object.keys(reactions).length > 0) {
                 reactionsHtml = '<div class="reactions-container">';
                 for (const [reaction, count] of Object.entries(reactions)) {
                     reactionsHtml += `
-                        <button class="reaction-badge" onclick="toggleReaction('${messageId}', '${reaction}')">
+                        <button class="reaction-badge" onclick="removeReaction('${messageId}', '${reaction}')">
                             <span class="reaction-emoji">${reaction}</span>
                             <span class="reaction-count">${count}</span>
                         </button>
@@ -1483,6 +961,270 @@
             }
         }
         
+        // Member Management Functions
+        function openMemberModal() {
+            document.getElementById('memberModal').style.display = 'flex';
+            loadRoomMembers();
+            loadAllUsers();
+        }
+        
+        function closeMemberModal() {
+            document.getElementById('memberModal').style.display = 'none';
+        }
+        
+        function closeMemberModalOnOutside(event) {
+            if (event.target === document.getElementById('memberModal')) {
+                closeMemberModal();
+            }
+        }
+        
+        function switchTab(tabName) {
+            document.querySelectorAll('.member-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`.member-tab[data-tab="${tabName}"]`).classList.add('active');
+            
+            if (tabName === 'room-members') {
+                loadRoomMembers();
+            } else {
+                loadAllUsers();
+            }
+        }
+        
+        async function loadRoomMembers() {
+            const container = document.getElementById('member-list-container');
+            container.innerHTML = '<div class="text-center text-gray-500 py-4">Loading room members...</div>';
+            
+            try {
+                const token = localStorage.getItem('access_token');
+                const roomsResponse = await fetch('/api/rooms/', {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+                const rooms = await roomsResponse.json();
+                const room = rooms.find(r => r.name === roomName);
+                
+                if (room) {
+                    currentRoomId = room.id;
+                    const membersResponse = await fetch(`/api/rooms/${room.id}/members/`, {
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    });
+                    const members = await membersResponse.json();
+                    
+                    if (members.length === 0) {
+                        container.innerHTML = '<div class="text-center text-gray-500 py-4">No members in this room yet</div>';
+                        return;
+                    }
+                    
+                    let html = '';
+                    for (const member of members) {
+                        const memberName = member.username || member.user?.username || 'Unknown';
+                        const initial = memberName.charAt(0).toUpperCase();
+                        const isCurrentUser = memberName === username;
+                        html += `
+                            <div class="member-item">
+                                <div class="member-avatar">${initial}</div>
+                                <div class="member-info">
+                                    <div class="member-name">${escapeHtml(memberName)}</div>
+                                    <div class="member-status"><i class="fas fa-circle" style="font-size: 8px; color: #22c55e;"></i> Online</div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    ${isCurrentUser ? '<span class="member-badge room-member">You</span>' : ''}
+                                    ${!isCurrentUser ? `<button class="remove-member-btn" onclick="removeMemberFromRoom('${escapeHtml(memberName)}')"><i class="fas fa-user-minus"></i> Remove</button>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }
+                    container.innerHTML = html;
+                }
+            } catch(e) {
+                console.error('Error loading room members:', e);
+                container.innerHTML = '<div class="text-center text-red-500 py-4">Error loading members</div>';
+            }
+        }
+        
+        async function loadAllUsers() {
+            const container = document.getElementById('member-list-container');
+            container.innerHTML = `
+                <div class="px-4 pt-4">
+                    <input type="text" id="searchUsers" class="search-members" placeholder="Search users by name...">
+                </div>
+                <div id="usersList" class="p-4">
+                    <div class="text-center text-gray-500 py-4">Loading users...</div>
+                </div>
+            `;
+            
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/auth/users/', {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch users');
+                }
+                
+                const users = await response.json();
+                
+                const roomsResponse = await fetch('/api/rooms/', {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+                const rooms = await roomsResponse.json();
+                const room = rooms.find(r => r.name === roomName);
+                
+                let roomMembers = [];
+                if (room) {
+                    currentRoomId = room.id;
+                    const membersResponse = await fetch(`/api/rooms/${room.id}/members/`, {
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    });
+                    roomMembers = await membersResponse.json();
+                }
+                
+                const roomMemberUsernames = roomMembers.map(m => m.username || m.user?.username);
+                const usersListContainer = document.getElementById('usersList');
+                const availableUsers = users.filter(user => 
+                    user.username !== username && !roomMemberUsernames.includes(user.username)
+                );
+                
+                if (availableUsers.length === 0) {
+                    usersListContainer.innerHTML = '<div class="text-center text-green-500 py-4">✓ All users are already in this room!</div>';
+                    return;
+                }
+                
+                let html = '';
+                for (const user of availableUsers) {
+                    const userName = user.username;
+                    const initial = userName.charAt(0).toUpperCase();
+                    html += `
+                        <div class="member-item">
+                            <div class="member-avatar">${initial}</div>
+                            <div class="member-info">
+                                <div class="member-name">${escapeHtml(userName)}</div>
+                                <div class="member-status">Click Add to invite to this room</div>
+                            </div>
+                            <button class="add-member-btn" onclick="addMemberToRoom('${escapeHtml(userName)}')">
+                                <i class="fas fa-user-plus"></i> Add
+                            </button>
+                        </div>
+                    `;
+                }
+                usersListContainer.innerHTML = html;
+                
+                const searchInput = document.getElementById('searchUsers');
+                if (searchInput) {
+                    const newSearchInput = searchInput.cloneNode(true);
+                    searchInput.parentNode.replaceChild(newSearchInput, searchInput);
+                    
+                    newSearchInput.addEventListener('input', (e) => {
+                        const searchTerm = e.target.value.toLowerCase();
+                        const filteredUsers = availableUsers.filter(user => 
+                            user.username.toLowerCase().includes(searchTerm)
+                        );
+                        let filteredHtml = '';
+                        if (filteredUsers.length === 0) {
+                            filteredHtml = '<div class="text-center text-gray-500 py-4">No users found</div>';
+                        } else {
+                            for (const user of filteredUsers) {
+                                const initial = user.username.charAt(0).toUpperCase();
+                                filteredHtml += `
+                                    <div class="member-item">
+                                        <div class="member-avatar">${initial}</div>
+                                        <div class="member-info">
+                                            <div class="member-name">${escapeHtml(user.username)}</div>
+                                            <div class="member-status">Click Add to invite to this room</div>
+                                        </div>
+                                        <button class="add-member-btn" onclick="addMemberToRoom('${escapeHtml(user.username)}')">
+                                            <i class="fas fa-user-plus"></i> Add
+                                        </button>
+                                    </div>
+                                `;
+                            }
+                        }
+                        usersListContainer.innerHTML = filteredHtml;
+                    });
+                }
+            } catch(e) {
+                console.error('Error loading users:', e);
+                container.innerHTML = '<div class="text-center text-red-500 py-4">Error loading users</div>';
+            }
+        }
+        
+        async function addMemberToRoom(userName) {
+            if (!currentRoomId) {
+                const token = localStorage.getItem('access_token');
+                const roomsResponse = await fetch('/api/rooms/', {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+                const rooms = await roomsResponse.json();
+                const room = rooms.find(r => r.name === roomName);
+                if (room) {
+                    currentRoomId = room.id;
+                }
+            }
+            
+            if (currentRoomId) {
+                try {
+                    const token = localStorage.getItem('access_token');
+                    const response = await fetch(`/api/rooms/${currentRoomId}/add-member/`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username: userName })
+                    });
+                    
+                    if (response.ok) {
+                        addSystemMessage(`✅ ${userName} was added to the room!`);
+                        await updateMemberCount();
+                        await loadRoomMembers();
+                        await loadAllUsers();
+                    }
+                } catch(e) {
+                    console.error('Error adding member:', e);
+                }
+            }
+        }
+        
+        async function removeMemberFromRoom(userName) {
+            if (confirm(`Are you sure you want to remove ${userName} from this room?`)) {
+                if (!currentRoomId) {
+                    const token = localStorage.getItem('access_token');
+                    const roomsResponse = await fetch('/api/rooms/', {
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    });
+                    const rooms = await roomsResponse.json();
+                    const room = rooms.find(r => r.name === roomName);
+                    if (room) {
+                        currentRoomId = room.id;
+                    }
+                }
+                
+                if (currentRoomId) {
+                    try {
+                        const token = localStorage.getItem('access_token');
+                        const response = await fetch(`/api/rooms/${currentRoomId}/remove-member/`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ username: userName })
+                        });
+                        
+                        if (response.ok) {
+                            addSystemMessage(`👋 ${userName} was removed from the room!`);
+                            await updateMemberCount();
+                            await loadRoomMembers();
+                            await loadAllUsers();
+                        }
+                    } catch(e) {
+                        console.error('Error removing member:', e);
+                    }
+                }
+            }
+        }
+        
         function setupEventListeners() {
             const sendBtn = document.getElementById('send-btn');
             const messageInput = document.getElementById('message-text');
@@ -1509,7 +1251,6 @@
             setupEventListeners();
             setupFileUpload();
         }
-
         
         init();
         setInterval(updateMemberCount, 30000);
