@@ -15,8 +15,32 @@ class CallConsumer(AsyncWebsocketConsumer):
         
         await self.accept()
         print(f"✅ Call WebSocket connected to {self.room_name}")
+        
+        # Notify that user is online for calls
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'call_signal',
+                'data': {
+                    'type': 'user_online',
+                    'username': self.scope['user'].username if self.scope['user'].is_authenticated else 'Anonymous'
+                }
+            }
+        )
     
     async def disconnect(self, close_code):
+        # Notify that user left
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'call_signal',
+                'data': {
+                    'type': 'user_offline',
+                    'username': self.scope['user'].username if self.scope['user'].is_authenticated else 'Anonymous'
+                }
+            }
+        )
+        
         # Leave room group
         await self.channel_layer.group_discard(
             self.room_group_name,
@@ -26,17 +50,19 @@ class CallConsumer(AsyncWebsocketConsumer):
     
     async def receive(self, text_data):
         data = json.loads(text_data)
+        print(f"📞 Call signal received: {data.get('type')} from {data.get('from')} to {data.get('to')}")
         
-        # Broadcast to all clients in the room except sender
+        # Broadcast to ALL clients in the room (including sender)
         await self.channel_layer.group_send(
             self.room_group_name,
             {
                 'type': 'call_signal',
-                'data': data,
-                'sender_channel': self.channel_name
+                'data': data
             }
         )
     
     async def call_signal(self, event):
         # Send to WebSocket
-        await self.send(text_data=json.dumps(event['data']))
+        data = event['data']
+        print(f"📞 Broadcasting call signal: {data.get('type')}")
+        await self.send(text_data=json.dumps(data))

@@ -1569,6 +1569,7 @@
         }
 
         async function startCall(targetUser, isVideo = true) {
+            console.log('📞 Starting call to:', targetUser, 'Video:', isVideo);
             currentCallWith = targetUser;
             
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -1767,6 +1768,9 @@
         }
 
         function showIncomingCall(from, isVideo) {
+            console.log('📞 Incoming call from:', from, 'Video:', isVideo);
+            
+            // Remove existing modal
             const existing = document.getElementById('incomingCallModal');
             if (existing) existing.remove();
             
@@ -1793,6 +1797,13 @@
             
             document.body.appendChild(modal);
             
+            // Play sound notification (optional)
+            try {
+                const audio = new Audio('https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3');
+                audio.play().catch(e => console.log('Could not play sound:', e));
+            } catch(e) {}
+            
+            // Auto-remove after 30 seconds
             setTimeout(() => {
                 const modalEl = document.getElementById('incomingCallModal');
                 if (modalEl) modalEl.remove();
