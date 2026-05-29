@@ -8,637 +8,98 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Message styling */
-        .message-item {
-            position: relative;
-            transition: all 0.2s ease;
-        }
-        
-        .message-actions {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            z-index: 10;
-            display: none;
-            gap: 5px;
-        }
-        
-        .message-item:hover .message-actions {
-            display: flex !important;
-        }
-        
-        /* Reaction button styling */
-        .reaction-trigger {
-            position: absolute;
-            bottom: -12px;
-            right: -12px;
-            background: #e2e8f0;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            z-index: 5;
-        }
-        
-        .reaction-trigger:hover {
-            background: #cbd5e1;
-            transform: scale(1.1);
-        }
-        
-        /* Reactions container */
-        .reactions-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 8px;
-        }
-        
-        .reaction-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(0, 0, 0, 0.08);
-            border: none;
-            border-radius: 20px;
-            padding: 3px 8px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .reaction-badge:hover {
-            background: rgba(0, 0, 0, 0.15);
-            transform: scale(1.05);
-        }
-        
-        .reaction-badge.active {
-            background: rgba(107, 70, 193, 0.25);
-            border: 1px solid #667eea;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-        
-        .reaction-emoji {
-            font-size: 14px;
-        }
-        
-        .reaction-count {
-            font-size: 11px;
-            font-weight: normal;
-        }
-        
-        /* Reaction picker */
-        .reaction-picker {
-            position: fixed;
-            background: white;
-            border-radius: 40px;
-            padding: 8px 12px;
-            display: flex;
-            gap: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            z-index: 10000;
-            border: 1px solid #e2e8f0;
-            animation: fadeInScale 0.2s ease;
-        }
-        
-        @keyframes fadeInScale {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        
-        .reaction-picker-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 50%;
-            transition: all 0.2s;
-        }
-        
-        .reaction-picker-btn:hover {
-            background: #f0f0f0;
-            transform: scale(1.2);
-        }
-        
-        /* Mobile Styles for reaction picker */
-        @media (max-width: 640px) {
-            .reaction-picker {
-                position: fixed !important;
-                bottom: auto !important;
-                top: 50% !important;
-                left: 50% !important;
-                transform: translate(-50%, -50%) !important;
-                flex-wrap: wrap;
-                width: 90%;
-                max-width: 300px;
-                justify-content: center;
-                border-radius: 20px;
-                padding: 15px;
-                gap: 10px;
-            }
-            
-            .reaction-picker-btn {
-                font-size: 32px !important;
-                padding: 10px 15px !important;
-                min-width: 55px;
-                min-height: 55px;
-            }
-        }
-        
-        /* Custom scrollbar */
-        #messages::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        #messages::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-        }
-        
-        #messages::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
-        }
-        
-        /* Message animation */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .message-item {
-            animation: fadeIn 0.3s ease-in-out;
-        }
+        /* Copy all your existing styles here - keeping them as is */
+        .message-item { position: relative; transition: all 0.2s ease; }
+        .message-actions { position: absolute; top: -10px; right: -10px; z-index: 10; display: none; gap: 5px; }
+        .message-item:hover .message-actions { display: flex !important; }
+        .reaction-trigger { position: absolute; bottom: -12px; right: -12px; background: #e2e8f0; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 5; }
+        .reaction-trigger:hover { background: #cbd5e1; transform: scale(1.1); }
+        .reactions-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .reaction-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(0, 0, 0, 0.08); border: none; border-radius: 20px; padding: 3px 8px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+        .reaction-badge:hover { background: rgba(0, 0, 0, 0.15); transform: scale(1.05); }
+        .reaction-badge.active { background: rgba(107, 70, 193, 0.25); border: 1px solid #667eea; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .reaction-emoji { font-size: 14px; }
+        .reaction-count { font-size: 11px; font-weight: normal; }
+        .reaction-picker { position: fixed; background: white; border-radius: 40px; padding: 8px 12px; display: flex; gap: 8px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); z-index: 10000; border: 1px solid #e2e8f0; animation: fadeInScale 0.2s ease; }
+        @keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .reaction-picker-btn { background: none; border: none; font-size: 24px; cursor: pointer; padding: 8px 12px; border-radius: 50%; transition: all 0.2s; }
+        .reaction-picker-btn:hover { background: #f0f0f0; transform: scale(1.2); }
+        @media (max-width: 640px) { .reaction-picker { position: fixed !important; bottom: auto !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; flex-wrap: wrap; width: 90%; max-width: 300px; justify-content: center; border-radius: 20px; padding: 15px; gap: 10px; }
+        .reaction-picker-btn { font-size: 32px !important; padding: 10px 15px !important; min-width: 55px; min-height: 55px; } }
+        #messages::-webkit-scrollbar { width: 6px; }
+        #messages::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
+        #messages::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .message-item { animation: fadeIn 0.3s ease-in-out; }
         
         /* Member Modal Styles */
-        .member-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-        }
+        .member-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 2000; align-items: center; justify-content: center; }
+        .member-modal-content { background: white; border-radius: 20px; width: 90%; max-width: 500px; max-height: 80vh; overflow: hidden; animation: modalFadeIn 0.3s ease; }
+        @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .member-modal-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .member-modal-header h3 { margin: 0; font-size: 1.25rem; }
+        .member-modal-close { background: none; border: none; color: white; font-size: 24px; cursor: pointer; transition: transform 0.2s; }
+        .member-modal-close:hover { transform: scale(1.1); }
+        .member-tabs { display: flex; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+        .member-tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; transition: all 0.2s; font-weight: 500; color: #64748b; }
+        .member-tab.active { color: #667eea; border-bottom: 2px solid #667eea; background: white; }
+        .member-tab:hover:not(.active) { background: #f1f5f9; }
+        .member-list { padding: 16px; max-height: 400px; overflow-y: auto; }
+        .member-item { display: flex; align-items: center; padding: 12px; border-radius: 12px; transition: all 0.2s; position: relative; }
+        .member-item:hover { background: #f1f5f9; }
+        .member-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; margin-right: 12px; flex-shrink: 0; }
+        .member-info { flex: 1; }
+        .member-name { font-weight: 600; color: #1e293b; }
+        .member-status { font-size: 12px; color: #64748b; margin-top: 2px; }
+        .member-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 500; margin-left: 8px; }
+        .member-badge.room-member { background: #dbeafe; color: #1e40af; }
+        .add-member-btn, .remove-member-btn { background: #667eea; color: white; border: none; padding: 4px 12px; border-radius: 20px; cursor: pointer; font-size: 12px; transition: all 0.2s; }
+        .add-member-btn:hover { background: #5a67d8; transform: scale(1.05); }
+        .remove-member-btn { background: #ef4444; }
+        .remove-member-btn:hover { background: #dc2626; transform: scale(1.05); }
+        .member-count-clickable { cursor: pointer; transition: all 0.2s; }
+        .member-count-clickable:hover { opacity: 0.8; transform: scale(1.05); display: inline-block; }
+        .search-members { width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 12px; font-size: 14px; }
+        .search-members:focus { outline: none; border-color: #667eea; }
         
-        .member-modal-content {
-            background: white;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow: hidden;
-            animation: modalFadeIn 0.3s ease;
-        }
-        
-        @keyframes modalFadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        
-        .member-modal-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .member-modal-header h3 {
-            margin: 0;
-            font-size: 1.25rem;
-        }
-        
-        .member-modal-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        
-        .member-modal-close:hover {
-            transform: scale(1.1);
-        }
-        
-        .member-tabs {
-            display: flex;
-            border-bottom: 1px solid #e2e8f0;
-            background: #f8fafc;
-        }
-        
-        .member-tab {
-            flex: 1;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 500;
-            color: #64748b;
-        }
-        
-        .member-tab.active {
-            color: #667eea;
-            border-bottom: 2px solid #667eea;
-            background: white;
-        }
-        
-        .member-tab:hover:not(.active) {
-            background: #f1f5f9;
-        }
-        
-        .member-list {
-            padding: 16px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        
-        .member-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            border-radius: 12px;
-            transition: all 0.2s;
-            position: relative;
-        }
-        
-        .member-item:hover {
-            background: #f1f5f9;
-        }
-        
-        .member-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 18px;
-            margin-right: 12px;
-            flex-shrink: 0;
-        }
-        
-        .member-info {
-            flex: 1;
-        }
-        
-        .member-name {
-            font-weight: 600;
-            color: #1e293b;
-        }
-        
-        .member-status {
-            font-size: 12px;
-            color: #64748b;
-            margin-top: 2px;
-        }
-        
-        .member-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 500;
-            margin-left: 8px;
-        }
-        
-        .member-badge.room-member {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-        
-        .add-member-btn, .remove-member-btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 4px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s;
-        }
-        
-        .add-member-btn:hover {
-            background: #5a67d8;
-            transform: scale(1.05);
-        }
-        
-        .remove-member-btn {
-            background: #ef4444;
-        }
-        
-        .remove-member-btn:hover {
-            background: #dc2626;
-            transform: scale(1.05);
-        }
-        
-        .member-count-clickable {
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .member-count-clickable:hover {
-            opacity: 0.8;
-            transform: scale(1.05);
-            display: inline-block;
-        }
-        
-        .search-members {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            margin-bottom: 12px;
-            font-size: 14px;
-        }
-        
-        .search-members:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        /* Responsive Design */
         @media (max-width: 640px) {
-            .max-w-6xl {
-                max-width: 100%;
-            }
-            
-            .chat-header {
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
-                padding: 12px !important;
-            }
-            
-            .chat-header h1 {
-                font-size: 16px;
-            }
-            
-            .message-item .max-w-\[70\%\] {
-                max-width: 85%;
-            }
-            
-            .reaction-trigger {
-                width: 22px;
-                height: 22px;
-                font-size: 10px;
-                bottom: -10px;
-                right: -10px;
-            }
-            
-            .reaction-badge {
-                font-size: 10px;
-                padding: 2px 6px;
-            }
-            
-            .bg-white.p-4 {
-                padding: 10px !important;
-            }
-            
-            #file-btn, #send-btn {
-                padding: 8px 12px !important;
-                font-size: 12px !important;
-            }
-            
-            #message-text {
-                font-size: 14px;
-                padding: 8px !important;
-            }
-            
-            .member-avatar {
-                width: 40px;
-                height: 40px;
-                font-size: 14px;
-            }
+            .max-w-6xl { max-width: 100%; }
+            .chat-header { flex-direction: column; gap: 10px; text-align: center; padding: 12px !important; }
+            .chat-header h1 { font-size: 16px; }
+            .message-item .max-w-\[70\%\] { max-width: 85%; }
+            .reaction-trigger { width: 22px; height: 22px; font-size: 10px; bottom: -10px; right: -10px; }
+            .reaction-badge { font-size: 10px; padding: 2px 6px; }
+            .bg-white.p-4 { padding: 10px !important; }
+            #file-btn, #send-btn { padding: 8px 12px !important; font-size: 12px !important; }
+            #message-text { font-size: 14px; padding: 8px !important; }
+            .member-avatar { width: 40px; height: 40px; font-size: 14px; }
         }
         
         /* Call Modal Styles */
-        .call-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 10000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .call-container {
-            position: relative;
-            width: 100%;
-            max-width: 1000px;
-            background: #1a1a2e;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-
-        .remote-video-container {
-            width: 100%;
-            height: 500px;
-            background: #0f0f1a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .remote-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .local-video {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            width: 200px;
-            height: 150px;
-            border-radius: 10px;
-            border: 2px solid white;
-            background: #000;
-            z-index: 10;
-            object-fit: cover;
-        }
-
-        .call-controls {
-            position: absolute;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 15px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.7));
-        }
-
-        .call-controls button {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            font-size: 24px;
-            transition: all 0.2s;
-        }
-
-        .call-controls button:hover {
-            transform: scale(1.1);
-        }
-
-        .end-call-btn {
-            background: #dc2626;
-            color: white;
-        }
-
-        .mute-btn, .video-toggle-btn {
-            background: #374151;
-            color: white;
-        }
-
-        .mute-btn.muted, .video-toggle-btn.muted {
-            background: #ef4444;
-        }
-
-        .incoming-call-modal {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
-            min-width: 300px;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .incoming-call-modal button {
-            padding: 8px 20px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            margin: 0 5px;
-            font-size: 14px;
-        }
-
-        .accept-call {
-            background: #22c55e;
-            color: white;
-        }
-
-        .accept-call:hover {
-            background: #16a34a;
-        }
-
-        .reject-call {
-            background: #ef4444;
-            color: white;
-        }
-
-        .reject-call:hover {
-            background: #dc2626;
-        }
-
-        .user-call-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            margin: 0 5px;
-            color: #667eea;
-            transition: all 0.2s;
-            padding: 6px 10px;
-            border-radius: 8px;
-        }
-
-        .user-call-btn:hover {
-            background: #e0e7ff;
-            transform: scale(1.05);
-        }
-
-        .call-status-text {
-            position: absolute;
-            top: 20px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            color: white;
-            font-size: 14px;
-            z-index: 10;
-            background: rgba(0,0,0,0.5);
-            padding: 8px;
-        }
-
-        .call-timer {
-            font-size: 16px;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        
-        /* Test Microphone Button */
-        .test-mic-btn {
-            background: #22c55e;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 8px;
-            font-size: 11px;
-            margin-left: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .test-mic-btn:hover {
-            background: #16a34a;
-            transform: scale(1.05);
-        }
+        .call-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 10000; align-items: center; justify-content: center; }
+        .call-container { position: relative; width: 100%; max-width: 1000px; background: #1a1a2e; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .remote-video-container { width: 100%; height: 500px; background: #0f0f1a; display: flex; align-items: center; justify-content: center; position: relative; }
+        .remote-video { width: 100%; height: 100%; object-fit: cover; }
+        .local-video { position: absolute; bottom: 20px; right: 20px; width: 200px; height: 150px; border-radius: 10px; border: 2px solid white; background: #000; z-index: 10; object-fit: cover; }
+        .call-controls { position: absolute; bottom: 20px; left: 0; right: 0; display: flex; justify-content: center; gap: 20px; padding: 15px; background: linear-gradient(transparent, rgba(0,0,0,0.7)); }
+        .call-controls button { width: 60px; height: 60px; border-radius: 50%; border: none; cursor: pointer; font-size: 24px; transition: all 0.2s; }
+        .call-controls button:hover { transform: scale(1.1); }
+        .end-call-btn { background: #dc2626; color: white; }
+        .mute-btn, .video-toggle-btn { background: #374151; color: white; }
+        .mute-btn.muted, .video-toggle-btn.muted { background: #ef4444; }
+        .incoming-call-modal { position: fixed; bottom: 30px; right: 30px; background: white; border-radius: 16px; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 1000; animation: slideIn 0.3s ease; min-width: 300px; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .incoming-call-modal button { padding: 8px 20px; border-radius: 8px; border: none; cursor: pointer; margin: 0 5px; font-size: 14px; }
+        .accept-call { background: #22c55e; color: white; }
+        .accept-call:hover { background: #16a34a; }
+        .reject-call { background: #ef4444; color: white; }
+        .reject-call:hover { background: #dc2626; }
+        .user-call-btn { background: none; border: none; cursor: pointer; font-size: 16px; margin: 0 5px; color: #667eea; transition: all 0.2s; padding: 6px 10px; border-radius: 8px; }
+        .user-call-btn:hover { background: #e0e7ff; transform: scale(1.05); }
+        .call-status-text { position: absolute; top: 20px; left: 0; right: 0; text-align: center; color: white; font-size: 14px; z-index: 10; background: rgba(0,0,0,0.5); padding: 8px; }
+        .call-timer { font-size: 16px; font-weight: bold; margin-left: 10px; }
+        .test-mic-btn { background: #22c55e; color: white; padding: 2px 8px; border-radius: 8px; font-size: 11px; margin-left: 8px; cursor: pointer; transition: all 0.2s; }
+        .test-mic-btn:hover { background: #16a34a; transform: scale(1.05); }
     </style>
 </head>
 <body class="bg-gradient-to-br from-purple-600 to-blue-500">
@@ -794,13 +255,10 @@
 
         function showReactionPicker(messageId, event) {
             event.stopPropagation();
-            
             const existingPicker = document.querySelector('.reaction-picker');
             if (existingPicker) existingPicker.remove();
-            
             const picker = document.createElement('div');
             picker.className = 'reaction-picker';
-            
             REACTIONS.forEach(reaction => {
                 const btn = document.createElement('button');
                 btn.textContent = reaction;
@@ -812,7 +270,6 @@
                 };
                 picker.appendChild(btn);
             });
-            
             picker.style.position = 'fixed';
             picker.style.top = '50%';
             picker.style.left = '50%';
@@ -824,9 +281,7 @@
             picker.style.display = 'flex';
             picker.style.gap = '8px';
             picker.style.boxShadow = '0 4px 20px rgba(0,0,0,0.2)';
-            
             document.body.appendChild(picker);
-            
             setTimeout(() => {
                 function closePicker(e) {
                     if (!picker.contains(e.target)) {
@@ -842,28 +297,19 @@
             const messageDiv = document.querySelector(`.message-item[data-id="${data.message_id}"]`);
             if (messageDiv) {
                 let reactionsContainer = messageDiv.querySelector('.reactions-container');
-                
                 if (data.reactions && Object.keys(data.reactions).length > 0) {
                     let newHtml = '<div class="reactions-container">';
                     for (const [reaction, count] of Object.entries(data.reactions)) {
-                        newHtml += `
-                            <button class="reaction-badge" onclick="removeReaction('${data.message_id}', '${reaction}')">
-                                <span class="reaction-emoji">${reaction}</span>
-                                <span class="reaction-count">${count}</span>
-                            </button>
-                        `;
+                        newHtml += `<button class="reaction-badge" onclick="removeReaction('${data.message_id}', '${reaction}')"><span class="reaction-emoji">${reaction}</span><span class="reaction-count">${count}</span></button>`;
                     }
                     newHtml += '</div>';
-                    
                     if (reactionsContainer) {
                         reactionsContainer.outerHTML = newHtml;
                     } else {
                         const contentDiv = messageDiv.querySelector('.max-w-\\[70\\%\\]');
                         if (contentDiv) {
                             const timestampDiv = contentDiv.querySelector('.text-xs');
-                            if (timestampDiv) {
-                                timestampDiv.insertAdjacentHTML('beforebegin', newHtml);
-                            }
+                            if (timestampDiv) timestampDiv.insertAdjacentHTML('beforebegin', newHtml);
                         }
                     }
                 } else if (reactionsContainer) {
@@ -877,12 +323,9 @@
         function connectWebSocket() {
             const wsUrl = `ws://${window.location.host}/ws/chat/${roomName}/`;
             socket = new WebSocket(wsUrl);
-            
             socket.onopen = () => console.log('✅ Connected to chat as:', username);
             socket.onmessage = (e) => {
                 const data = JSON.parse(e.data);
-                console.log('Received:', data);
-                
                 if (data.type === 'message') {
                     displayMessage(data.username, data.message, data.timestamp, data.message_id, false, data.reactions || {});
                 } else if (data.type === 'file') {
@@ -906,31 +349,21 @@
         function displayMessage(msgUsername, message, timestamp, messageId, isEdited = false, reactions = {}) {
             const messagesDiv = document.getElementById('messages');
             const isMine = msgUsername === username;
-            
             if (messagesDiv.children.length === 1 && messagesDiv.children[0].innerText === 'Loading messages...') {
                 messagesDiv.innerHTML = '';
             }
-            
             const messageDiv = document.createElement('div');
             messageDiv.className = `message-item flex ${isMine ? 'justify-end' : 'justify-start'} mb-4`;
             messageDiv.setAttribute('data-id', messageId || '');
-            
             let reactionsHtml = '';
             if (reactions && Object.keys(reactions).length > 0) {
                 reactionsHtml = '<div class="reactions-container">';
                 for (const [reaction, count] of Object.entries(reactions)) {
-                    reactionsHtml += `
-                        <button class="reaction-badge" onclick="removeReaction('${messageId}', '${reaction}')">
-                            <span class="reaction-emoji">${reaction}</span>
-                            <span class="reaction-count">${count}</span>
-                        </button>
-                    `;
+                    reactionsHtml += `<button class="reaction-badge" onclick="removeReaction('${messageId}', '${reaction}')"><span class="reaction-emoji">${reaction}</span><span class="reaction-count">${count}</span></button>`;
                 }
                 reactionsHtml += '</div>';
             }
-            
             const editedMark = isEdited ? ' <em class="text-xs">(edited)</em>' : '';
-            
             messageDiv.innerHTML = `
                 <div class="max-w-[70%] ${isMine ? 'bg-purple-600 text-white' : 'bg-white text-gray-800'} rounded-2xl p-3 shadow relative">
                     <div class="font-bold text-sm ${isMine ? 'text-purple-200' : 'text-purple-600'}">${escapeHtml(msgUsername)}</div>
@@ -942,14 +375,8 @@
                     <div class="reaction-trigger" onclick="showReactionPicker('${messageId}', event)">😊</div>
                     ${isMine ? `
                         <div class="message-actions absolute -top-2 -right-2 space-x-1">
-                            <button onclick="editMessage('${messageId}', '${escapeHtml(message).replace(/'/g, "\\'")}')" 
-                                    class="bg-blue-500 text-white rounded-full w-6 h-6 text-xs hover:bg-blue-600 transition">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button onclick="deleteMessage('${messageId}')" 
-                                    class="bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600 transition">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <button onclick="editMessage('${messageId}', '${escapeHtml(message).replace(/'/g, "\\'")}')" class="bg-blue-500 text-white rounded-full w-6 h-6 text-xs hover:bg-blue-600 transition"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteMessage('${messageId}')" class="bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600 transition"><i class="fas fa-trash"></i></button>
                         </div>
                     ` : ''}
                 </div>
@@ -961,15 +388,12 @@
         function displayFileMessage(msgUsername, message, fileUrl, fileType, fileName, timestamp, messageId) {
             const messagesDiv = document.getElementById('messages');
             const isMine = msgUsername === username;
-            
             if (messagesDiv.children.length === 1 && messagesDiv.children[0].innerText === 'Loading messages...') {
                 messagesDiv.innerHTML = '';
             }
-            
             const messageDiv = document.createElement('div');
             messageDiv.className = `message-item flex ${isMine ? 'justify-end' : 'justify-start'} mb-4`;
             messageDiv.setAttribute('data-id', messageId || Date.now().toString());
-            
             let contentHtml = '';
             if (fileType === 'image') {
                 contentHtml = `<img src="${fileUrl}" class="max-w-xs rounded-lg cursor-pointer mt-2" onclick="window.open(this.src)">`;
@@ -980,7 +404,6 @@
             } else {
                 contentHtml = `<a href="${fileUrl}" target="_blank" class="text-blue-500 underline mt-2 inline-block"><i class="fas fa-download"></i> Download ${escapeHtml(fileName)}</a>`;
             }
-            
             messageDiv.innerHTML = `
                 <div class="max-w-[70%] ${isMine ? 'bg-purple-600 text-white' : 'bg-white text-gray-800'} rounded-2xl p-3 shadow relative">
                     <div class="font-bold text-sm ${isMine ? 'text-purple-200' : 'text-purple-600'}">${escapeHtml(msgUsername)}</div>
@@ -990,10 +413,7 @@
                     <div class="reaction-trigger" onclick="showReactionPicker('${messageId}', event)">😊</div>
                     ${isMine ? `
                         <div class="message-actions absolute -top-2 -right-2 space-x-1">
-                            <button onclick="deleteMessage('${messageId}')" 
-                                    class="bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600 transition">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <button onclick="deleteMessage('${messageId}')" class="bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600 transition"><i class="fas fa-trash"></i></button>
                         </div>
                     ` : ''}
                 </div>
@@ -1208,7 +628,6 @@
                 tab.classList.remove('active');
             });
             document.querySelector(`.member-tab[data-tab="${tabName}"]`).classList.add('active');
-            
             if (tabName === 'room-members') {
                 loadRoomMembers();
             } else {
@@ -1219,7 +638,6 @@
         async function loadRoomMembers() {
             const container = document.getElementById('member-list-container');
             container.innerHTML = '<div class="text-center text-gray-500 py-4">Loading room members...</div>';
-            
             try {
                 const token = localStorage.getItem('access_token');
                 const roomsResponse = await fetch('/api/rooms/', {
@@ -1227,19 +645,16 @@
                 });
                 const rooms = await roomsResponse.json();
                 const room = rooms.find(r => r.name === roomName);
-                
                 if (room) {
                     currentRoomId = room.id;
                     const membersResponse = await fetch(`/api/rooms/${room.id}/members/`, {
                         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
                     });
                     const members = await membersResponse.json();
-                    
                     if (members.length === 0) {
                         container.innerHTML = '<div class="text-center text-gray-500 py-4">No members in this room yet</div>';
                         return;
                     }
-                    
                     let html = '';
                     for (const member of members) {
                         const memberName = member.username || member.user?.username || 'Unknown';
@@ -1274,11 +689,9 @@
                 container.innerHTML = '<div class="text-center text-red-500 py-4">Error loading members</div>';
             }
         }
-        //######################
+        
         async function loadAllUsers() {
             const container = document.getElementById('member-list-container');
-            if (!container) return;
-            
             container.innerHTML = `
                 <div class="px-4 pt-4">
                     <input type="text" id="searchUsers" class="search-members" placeholder="Search users by name...">
@@ -1287,25 +700,20 @@
                     <div class="text-center text-gray-500 py-4">Loading users...</div>
                 </div>
             `;
-            
             try {
                 const token = localStorage.getItem('access_token');
                 const response = await fetch('/api/auth/users/', {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}  
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
                 });
-                
                 if (!response.ok) {
                     throw new Error('Failed to fetch users');
                 }
-                
                 const users = await response.json();
-                
                 const roomsResponse = await fetch('/api/rooms/', {
                     headers: token ? { 'Authorization': `Bearer ${token}` } : {}
                 });
                 const rooms = await roomsResponse.json();
                 const room = rooms.find(r => r.name === roomName);
-                
                 let roomMembers = [];
                 if (room) {
                     currentRoomId = room.id;
@@ -1314,21 +722,15 @@
                     });
                     roomMembers = await membersResponse.json();
                 }
-                
                 const roomMemberUsernames = roomMembers.map(m => m.username || m.user?.username);
                 const usersListContainer = document.getElementById('usersList');
-                
-                if (!usersListContainer) return;
-                
                 const availableUsers = users.filter(user => 
                     user.username !== username && !roomMemberUsernames.includes(user.username)
                 );
-                
                 if (availableUsers.length === 0) {
                     usersListContainer.innerHTML = '<div class="text-center text-green-500 py-4">✓ All users are already in this room!</div>';
                     return;
                 }
-                
                 let html = '';
                 for (const user of availableUsers) {
                     const userName = user.username;
@@ -1347,12 +749,10 @@
                     `;
                 }
                 usersListContainer.innerHTML = html;
-                
                 const searchInput = document.getElementById('searchUsers');
                 if (searchInput) {
                     const newSearchInput = searchInput.cloneNode(true);
                     searchInput.parentNode.replaceChild(newSearchInput, searchInput);
-                    
                     newSearchInput.addEventListener('input', (e) => {
                         const searchTerm = e.target.value.toLowerCase();
                         const filteredUsers = availableUsers.filter(user => 
@@ -1383,13 +783,10 @@
                 }
             } catch(e) {
                 console.error('Error loading users:', e);
-                const container = document.getElementById('member-list-container');
-                if (container) {
-                    container.innerHTML = '<div class="text-center text-red-500 py-4">Error loading users</div>';
-                }
+                container.innerHTML = '<div class="text-center text-red-500 py-4">Error loading users</div>';
             }
         }
-    //#################################################################      
+        
         async function addMemberToRoom(userName) {
             if (!currentRoomId) {
                 const token = localStorage.getItem('access_token');
@@ -1402,7 +799,6 @@
                     currentRoomId = room.id;
                 }
             }
-            
             if (currentRoomId) {
                 try {
                     const token = localStorage.getItem('access_token');
@@ -1414,7 +810,6 @@
                         },
                         body: JSON.stringify({ username: userName })
                     });
-                    
                     if (response.ok) {
                         addSystemMessage(`✅ ${userName} was added to the room!`);
                         await updateMemberCount();
@@ -1440,7 +835,6 @@
                         currentRoomId = room.id;
                     }
                 }
-                
                 if (currentRoomId) {
                     try {
                         const token = localStorage.getItem('access_token');
@@ -1452,7 +846,6 @@
                             },
                             body: JSON.stringify({ username: userName })
                         });
-                        
                         if (response.ok) {
                             addSystemMessage(`👋 ${userName} was removed from the room!`);
                             await updateMemberCount();
@@ -1484,26 +877,16 @@
             ]
         };
         
-        // Test Microphone Function
         function testMicrophone() {
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                 addSystemMessage('❌ getUserMedia not supported. Please use Chrome, Firefox, or Edge.');
                 return;
             }
-            
             addSystemMessage('🎤 Testing microphone... Please allow permission if prompted.');
-            
             navigator.mediaDevices.getUserMedia({ audio: true })
                 .then(stream => {
                     addSystemMessage('✅ Microphone working! You can make audio calls.');
-                    // Play a test sound to confirm
-                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    const source = audioContext.createMediaStreamSource(stream);
-                    const analyser = audioContext.createAnalyser();
-                    source.connect(analyser);
-                    addSystemMessage('🔊 Microphone test complete. You can now make calls.');
                     stream.getTracks().forEach(track => track.stop());
-                    audioContext.close();
                 })
                 .catch(error => {
                     console.error('Microphone error:', error);
@@ -1511,8 +894,6 @@
                         addSystemMessage('❌ Please allow microphone access. Click the camera icon in the address bar.');
                     } else if (error.name === 'NotFoundError') {
                         addSystemMessage('❌ No microphone found. Please connect a microphone.');
-                    } else if (error.name === 'NotReadableError') {
-                        addSystemMessage('❌ Cannot access microphone. It may be in use by another application.');
                     } else {
                         addSystemMessage(`❌ Microphone error: ${error.message}`);
                     }
@@ -1527,39 +908,43 @@
                 console.log('✅ Call WebSocket connected');
             };
             
-            callSocket.onmessage = async (e) => {
+            callSocket.onmessage = (e) => {
                 const data = JSON.parse(e.data);
-                console.log('Call message:', data);
+                console.log('📞 Call message received:', data);
                 
-                if (data.type === 'incoming_call') {
-                    showIncomingCall(data.from, data.isVideo);
-                } else if (data.type === 'offer') {
-                    if (data.from === currentCallWith) {
-                        await handleOffer(data.offer);
+                if (data.type === 'offer') {
+                    console.log('📞 Received offer from:', data.from);
+                    if (data.to === username) {
+                        currentCallWith = data.from;
+                        showIncomingCall(data.from, data.isVideo);
                     }
                 } else if (data.type === 'answer') {
-                    if (data.from === currentCallWith) {
-                        await handleAnswer(data.answer);
+                    console.log('📞 Received answer from:', data.from);
+                    if (data.from === currentCallWith && peerConnection) {
+                        handleAnswer(data.answer);
                     }
                 } else if (data.type === 'ice-candidate') {
+                    console.log('📞 Received ICE candidate from:', data.from);
                     if (data.from === currentCallWith && peerConnection) {
-                        try {
-                            await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
-                        } catch (e) {
-                            console.error('Error adding ICE candidate:', e);
-                        }
+                        peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate)).catch(e => console.error('Error adding ICE candidate:', e));
                     }
                 } else if (data.type === 'end_call') {
+                    console.log('📞 Call ended by:', data.from);
                     if (data.from === currentCallWith) {
                         addSystemMessage(`${data.from} ended the call`);
                         endCall();
                     }
                 } else if (data.type === 'reject_call') {
+                    console.log('📞 Call rejected by:', data.from);
                     if (data.from === currentCallWith) {
                         addSystemMessage(`${data.from} rejected the call`);
                         closeCallModal();
                     }
                 }
+            };
+            
+            callSocket.onerror = (error) => {
+                console.error('Call WebSocket error:', error);
             };
             
             callSocket.onclose = () => {
@@ -1573,19 +958,27 @@
             currentCallWith = targetUser;
             
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                addSystemMessage('❌ Your browser does not support audio/video calls. Please use Chrome, Firefox, or Edge.');
+                addSystemMessage('❌ Audio calls require HTTPS or localhost. Please use http://127.0.0.1:8000/');
                 return;
             }
             
             try {
-                addSystemMessage(`📞 Starting ${isVideo ? 'video' : 'audio'} call to ${targetUser}...`);
-                
                 const constraints = { audio: true };
                 if (isVideo) {
                     constraints.video = true;
                 }
                 
+                addSystemMessage(`📞 Requesting microphone access...`);
+                
                 localStream = await navigator.mediaDevices.getUserMedia(constraints);
+                
+                const audioTrack = localStream.getAudioTracks()[0];
+                if (!audioTrack) {
+                    addSystemMessage('❌ No audio track available. Microphone may be disabled.');
+                    return;
+                }
+                
+                addSystemMessage(`✅ Audio acquired. Sending call request to ${targetUser}...`);
                 
                 showCallModal(isVideo);
                 displayLocalVideo();
@@ -1607,6 +1000,7 @@
                 
                 peerConnection.onicecandidate = (event) => {
                     if (event.candidate && callSocket && callSocket.readyState === WebSocket.OPEN) {
+                        console.log('📞 Sending ICE candidate');
                         callSocket.send(JSON.stringify({
                             'type': 'ice-candidate',
                             'candidate': event.candidate,
@@ -1616,19 +1010,10 @@
                     }
                 };
                 
-                peerConnection.oniceconnectionstatechange = () => {
-                    if (peerConnection.iceConnectionState === 'connected') {
-                        updateCallStatus('Connected');
-                    } else if (peerConnection.iceConnectionState === 'disconnected') {
-                        updateCallStatus('Disconnected');
-                    } else if (peerConnection.iceConnectionState === 'failed') {
-                        updateCallStatus('Connection failed');
-                    }
-                };
-                
                 const offer = await peerConnection.createOffer();
                 await peerConnection.setLocalDescription(offer);
                 
+                console.log('📞 Sending offer to:', targetUser);
                 callSocket.send(JSON.stringify({
                     'type': 'offer',
                     'offer': offer,
@@ -1643,11 +1028,9 @@
             } catch (error) {
                 console.error('Error starting call:', error);
                 if (error.name === 'NotAllowedError') {
-                    addSystemMessage('❌ Please allow microphone access to make calls. Check browser permissions.');
+                    addSystemMessage('❌ Please allow microphone access to make calls.');
                 } else if (error.name === 'NotFoundError') {
                     addSystemMessage('❌ No microphone found. Please connect a microphone.');
-                } else if (error.name === 'NotReadableError') {
-                    addSystemMessage('❌ Cannot access microphone. It may be in use by another application.');
                 } else {
                     addSystemMessage(`❌ Could not start call: ${error.message}`);
                 }
@@ -1658,20 +1041,17 @@
         async function handleOffer(offer) {
             if (!peerConnection) {
                 peerConnection = new RTCPeerConnection(configuration);
-                
                 if (localStream) {
                     localStream.getTracks().forEach(track => {
                         peerConnection.addTrack(track, localStream);
                     });
                 }
-                
                 peerConnection.ontrack = (event) => {
                     const remoteVideo = document.getElementById('remoteVideo');
                     if (remoteVideo && event.streams[0]) {
                         remoteVideo.srcObject = event.streams[0];
                     }
                 };
-                
                 peerConnection.onicecandidate = (event) => {
                     if (event.candidate && callSocket && callSocket.readyState === WebSocket.OPEN) {
                         callSocket.send(JSON.stringify({
@@ -1683,11 +1063,9 @@
                     }
                 };
             }
-            
             await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
             const answer = await peerConnection.createAnswer();
             await peerConnection.setLocalDescription(answer);
-            
             callSocket.send(JSON.stringify({
                 'type': 'answer',
                 'answer': answer,
@@ -1705,10 +1083,8 @@
         function showCallModal(isVideo) {
             const modal = document.getElementById('callModal');
             modal.style.display = 'flex';
-            
             const callStatusMessage = document.getElementById('callStatusMessage');
             callStatusMessage.innerText = `Calling ${currentCallWith}...`;
-            
             if (!isVideo) {
                 const remoteVideoContainer = document.querySelector('.remote-video-container');
                 remoteVideoContainer.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
@@ -1726,8 +1102,6 @@
         function closeCallModal() {
             const modal = document.getElementById('callModal');
             modal.style.display = 'none';
-            
-            // Reset video container for next call
             const remoteVideoContainer = document.querySelector('.remote-video-container');
             remoteVideoContainer.style.background = '#0f0f1a';
             remoteVideoContainer.innerHTML = `<video id="remoteVideo" class="remote-video" autoplay playsinline></video>
@@ -1735,7 +1109,6 @@
                                                    <span id="callStatusMessage">Connecting...</span>
                                                    <span id="callTimer" class="call-timer"></span>
                                                </div>`;
-            
             if (callActive) {
                 endCall();
             }
@@ -1743,7 +1116,6 @@
 
         function endCall() {
             stopCallTimer();
-            
             if (callSocket && callSocket.readyState === WebSocket.OPEN && currentCallWith) {
                 callSocket.send(JSON.stringify({
                     'type': 'end_call',
@@ -1751,29 +1123,23 @@
                     'to': currentCallWith
                 }));
             }
-            
             if (peerConnection) {
                 peerConnection.close();
                 peerConnection = null;
             }
-            
             if (localStream) {
                 localStream.getTracks().forEach(track => track.stop());
                 localStream = null;
             }
-            
             callActive = false;
             currentCallWith = null;
             closeCallModal();
         }
 
         function showIncomingCall(from, isVideo) {
-            console.log('📞 Incoming call from:', from, 'Video:', isVideo);
-            
-            // Remove existing modal
+            console.log('🔔 SHOWING INCOMING CALL from:', from, 'Video:', isVideo);
             const existing = document.getElementById('incomingCallModal');
             if (existing) existing.remove();
-            
             const modal = document.createElement('div');
             modal.id = 'incomingCallModal';
             modal.className = 'incoming-call-modal';
@@ -1794,16 +1160,7 @@
                     </button>
                 </div>
             `;
-            
             document.body.appendChild(modal);
-            
-            // Play sound notification (optional)
-            try {
-                const audio = new Audio('https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3');
-                audio.play().catch(e => console.log('Could not play sound:', e));
-            } catch(e) {}
-            
-            // Auto-remove after 30 seconds
             setTimeout(() => {
                 const modalEl = document.getElementById('incomingCallModal');
                 if (modalEl) modalEl.remove();
@@ -1813,31 +1170,23 @@
         async function acceptCall(from, isVideo) {
             document.getElementById('incomingCallModal')?.remove();
             currentCallWith = from;
-            
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                 addSystemMessage('❌ Your browser does not support audio/video calls.');
                 return;
             }
-            
             try {
-                addSystemMessage(`📞 Accepting ${isVideo ? 'video' : 'audio'} call from ${from}...`);
-                
                 const constraints = { audio: true };
                 if (isVideo) {
                     constraints.video = true;
                 }
-                
+                addSystemMessage(`📞 Accepting ${isVideo ? 'video' : 'audio'} call from ${from}...`);
                 localStream = await navigator.mediaDevices.getUserMedia(constraints);
-                
                 showCallModal(isVideo);
                 displayLocalVideo();
-                
                 peerConnection = new RTCPeerConnection(configuration);
-                
                 localStream.getTracks().forEach(track => {
                     peerConnection.addTrack(track, localStream);
                 });
-                
                 peerConnection.ontrack = (event) => {
                     const remoteVideo = document.getElementById('remoteVideo');
                     if (remoteVideo && event.streams[0]) {
@@ -1846,7 +1195,6 @@
                         updateCallStatus('Connected');
                     }
                 };
-                
                 peerConnection.onicecandidate = (event) => {
                     if (event.candidate && callSocket && callSocket.readyState === WebSocket.OPEN) {
                         callSocket.send(JSON.stringify({
@@ -1857,19 +1205,11 @@
                         }));
                     }
                 };
-                
                 callActive = true;
                 startCallTimer();
-                
             } catch (error) {
                 console.error('Error accepting call:', error);
-                if (error.name === 'NotAllowedError') {
-                    addSystemMessage('❌ Please allow microphone access to accept calls.');
-                } else if (error.name === 'NotFoundError') {
-                    addSystemMessage('❌ No microphone found.');
-                } else {
-                    addSystemMessage(`❌ Could not accept call: ${error.message}`);
-                }
+                addSystemMessage(`❌ Could not accept call: ${error.message}`);
                 endCall();
             }
         }
