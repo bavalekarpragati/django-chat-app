@@ -27,5 +27,6 @@ urlpatterns = [
     path('api/rooms/<int:room_id>/add-member/', views.AddMemberToRoomView.as_view(), name='add-member'),
     path('api/rooms/<int:room_id>/remove-member/', views.RemoveMemberFromRoomView.as_view(), name='remove-member'),
     path('api/messages/<int:message_id>/forward/', views.ForwardMessageView.as_view(), name='forward-message'),
-    path('api/messages/<int:message_id>/pin/', views.PinMessageView.as_view(), name='pin-message')
+    path('api/messages/<int:message_id>/pin/', views.PinMessageView.as_view(), name='pin-message'),
+    path('api/rooms/<int:room_id>/search/', views.SearchMessagesView.as_view(), name='search-messages'),
 ]

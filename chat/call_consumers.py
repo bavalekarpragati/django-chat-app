@@ -50,16 +50,43 @@ class CallConsumer(AsyncWebsocketConsumer):
     
     async def receive(self, text_data):
         data = json.loads(text_data)
-        print(f"📞 Call signal received: {data.get('type')} from {data.get('from')} to {data.get('to')}")
+        message_type = data.get('type')
+        print(f"📞 Call signal received: {message_type} from {data.get('from')} to {data.get('to')}")
         
-        # Broadcast to ALL clients in the room (including sender)
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'call_signal',
-                'data': data
-            }
-        )
+        # Handle different message types
+        if message_type == 'group_call_start':
+            # Broadcast group call start to all clients
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'call_signal',
+                    'data': {
+                        'type': 'group_call_start',
+                        'from': data.get('from')
+                    }
+                }
+            )
+        elif message_type == 'group_call_end':
+            # Broadcast group call end to all clients
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'call_signal',
+                    'data': {
+                        'type': 'group_call_end',
+                        'from': data.get('from')
+                    }
+                }
+            )
+        else:
+            # Broadcast to ALL clients in the room for regular calls
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'call_signal',
+                    'data': data
+                }
+            )
     
     async def call_signal(self, event):
         # Send to WebSocket

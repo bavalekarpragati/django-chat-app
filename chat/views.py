@@ -497,3 +497,39 @@ class GetPinnedMessagesView(generics.ListAPIView):
         return Message.objects.filter(
             pinnedmessage__room_id=room_id
         ).order_by('-pinnedmessage__pinned_at')
+    
+class SearchMessagesView(APIView):
+    """Search messages in a room"""
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, room_id):
+        query = request.query_params.get('q', '').strip()
+        
+        if not query:
+            return Response({'messages': [], 'count': 0})
+        
+        try:
+            room = ChatRoom.objects.get(id=room_id)
+            
+            # Search in messages
+            messages = Message.objects.filter(
+                room=room,
+                text__icontains=query
+            ).order_by('-timestamp')[:100]
+            
+            serializer = MessageSerializer(messages, many=True)
+            
+            # Highlight search terms
+            for msg in serializer.data:
+                msg['text_highlighted'] = msg['text'].replace(
+                    query, f'<mark class="bg-yellow-200">{query}</mark>'
+                )
+            
+            return Response({
+                'messages': serializer.data,
+                'count': messages.count(),
+                'query': query
+            })
+            
+        except ChatRoom.DoesNotExist:
+            return Response({'error': 'Room not found'}, status=404)
