@@ -100,6 +100,109 @@
         .call-timer { font-size: 16px; font-weight: bold; margin-left: 10px; }
         .test-mic-btn { background: #22c55e; color: white; padding: 2px 8px; border-radius: 8px; font-size: 11px; margin-left: 8px; cursor: pointer; transition: all 0.2s; }
         .test-mic-btn:hover { background: #16a34a; transform: scale(1.05); }
+        
+        /* NEW: Forward Modal Styles */
+        .forward-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10001;
+            align-items: center;
+            justify-content: center;
+        }
+        .forward-modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            animation: modalFadeIn 0.3s ease;
+        }
+        .forward-room-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .forward-room-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #f8fafc;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .forward-room-item:hover {
+            background: #e0e7ff;
+        }
+        
+        /* NEW: Pinned Messages Styles */
+        .pinned-messages-container {
+            background: #fef3c7;
+            border-bottom: 2px solid #f59e0b;
+            max-height: 150px;
+            overflow-y: auto;
+            display: none;
+        }
+        .pinned-messages-header {
+            padding: 8px 12px;
+            background: #fde68a;
+            font-weight: bold;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #fcd34d;
+        }
+        .pinned-message-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-bottom: 1px solid #fde68a;
+            font-size: 13px;
+        }
+        .pinned-message-item:hover {
+            background: #fef9c3;
+        }
+        .pin-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #f59e0b;
+            font-size: 14px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+        .pin-btn:hover {
+            background: #fef3c7;
+        }
+        .pin-btn.pinned {
+            color: #f59e0b;
+        }
+        .unpin-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #ef4444;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+        .unpin-btn:hover {
+            background: #fee2e2;
+        }
+        .share-btn {
+            background: #10b981;
+            color: white;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-purple-600 to-blue-500">
@@ -120,6 +223,15 @@
                     <i class="fas fa-microphone"></i> Test Mic
                 </button>
             </div>
+        </div>
+        
+        <!-- NEW: Pinned Messages Section -->
+        <div id="pinnedMessages" class="pinned-messages-container">
+            <div class="pinned-messages-header">
+                <span><i class="fas fa-thumbtack"></i> Pinned Messages</span>
+                <button onclick="closePinnedMessages()" class="text-gray-500 hover:text-gray-700">✕</button>
+            </div>
+            <div id="pinnedMessagesList"></div>
         </div>
         
         <!-- Messages Container -->
@@ -146,7 +258,7 @@
                 </button>
             </div>
             <div class="text-xs text-gray-400 mt-2 text-center sm:text-left">
-                <i class="fas fa-info-circle"></i> Press Enter to send | Click 😊 to add reaction | Click Test Mic to check audio
+                <i class="fas fa-info-circle"></i> Press Enter to send | Click 😊 to add reaction | Click Test Mic to check audio | 📌 Pin messages | ↗️ Forward messages
             </div>
         </div>
     </div>
@@ -193,6 +305,21 @@
         </div>
     </div>
 
+    <!-- NEW: Forward Modal -->
+    <div id="forwardModal" class="forward-modal">
+        <div class="forward-modal-content">
+            <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-share-alt text-purple-600"></i> Forward to Room
+            </h3>
+            <div id="forwardRoomList" class="forward-room-list space-y-2">
+                Loading rooms...
+            </div>
+            <button onclick="closeForwardModal()" class="mt-4 bg-gray-500 text-white px-4 py-2 rounded-lg w-full hover:bg-gray-600 transition">
+                Cancel
+            </button>
+        </div>
+    </div>
+
     <script>
         const roomName = "{{ room_name }}";
         let username = null;
@@ -201,6 +328,9 @@
         let currentRoomId = null;
         
         const REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
+        
+        // NEW: Forward message variables
+        let currentForwardMessageId = null;
         
         function getUserInfo() {
             const token = localStorage.getItem('access_token');
@@ -225,6 +355,162 @@
             localStorage.removeItem('chat_username');
             localStorage.removeItem('user_id');
             window.location.href = '/login/';
+        }
+        
+        // ============ NEW: FORWARD MESSAGE FUNCTIONS ============
+        
+        function showForwardModal(messageId) {
+            currentForwardMessageId = messageId;
+            const modal = document.getElementById('forwardModal');
+            modal.style.display = 'flex';
+            loadRoomsForForwarding();
+        }
+        
+        function closeForwardModal() {
+            const modal = document.getElementById('forwardModal');
+            modal.style.display = 'none';
+            currentForwardMessageId = null;
+        }
+        
+        async function loadRoomsForForwarding() {
+            const container = document.getElementById('forwardRoomList');
+            container.innerHTML = '<div class="text-center text-gray-500 py-4">Loading rooms...</div>';
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/rooms/', {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+                const rooms = await response.json();
+                const otherRooms = rooms.filter(r => r.name !== roomName);
+                
+                if (otherRooms.length === 0) {
+                    container.innerHTML = '<div class="text-gray-500 text-center py-4">No other rooms available</div>';
+                    return;
+                }
+                
+                let html = '';
+                for (const room of otherRooms) {
+                    html += `
+                        <div class="forward-room-item" onclick="forwardMessageToRoom(${room.id})">
+                            <div>
+                                <div class="font-bold text-purple-600">${escapeHtml(room.name)}</div>
+                                <div class="text-xs text-gray-500">${room.member_count || 0} members</div>
+                            </div>
+                            <button class="bg-purple-600 text-white px-3 py-1 rounded-lg text-sm hover:bg-purple-700 transition">
+                                <i class="fas fa-share"></i> Forward
+                            </button>
+                        </div>
+                    `;
+                }
+                container.innerHTML = html;
+            } catch(e) {
+                console.error('Error loading rooms:', e);
+                container.innerHTML = '<div class="text-red-500 text-center py-4">Error loading rooms</div>';
+            }
+        }
+        
+        async function forwardMessageToRoom(roomId) {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/messages/${currentForwardMessageId}/forward/`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ room_id: roomId })
+                });
+                
+                if (response.ok) {
+                    addSystemMessage('✅ Message forwarded successfully!');
+                    closeForwardModal();
+                } else {
+                    addSystemMessage('❌ Failed to forward message');
+                }
+            } catch(e) {
+                console.error('Error forwarding message:', e);
+                addSystemMessage('❌ Error forwarding message');
+            }
+        }
+        
+        // ============ NEW: PINNED MESSAGE FUNCTIONS ============
+        
+        async function togglePinMessage(messageId) {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/messages/${messageId}/pin/`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.pinned) {
+                        addSystemMessage('📌 Message pinned!');
+                    } else {
+                        addSystemMessage('📍 Message unpinned');
+                    }
+                    loadPinnedMessages();
+                }
+            } catch(e) {
+                console.error('Error pinning message:', e);
+                addSystemMessage('❌ Error toggling pin');
+            }
+        }
+        
+        async function loadPinnedMessages() {
+            if (!currentRoomId) return;
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/rooms/${currentRoomId}/pinned-messages/`, {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+                
+                const messages = await response.json();
+                const container = document.getElementById('pinnedMessages');
+                const listContainer = document.getElementById('pinnedMessagesList');
+                
+                if (messages && messages.length > 0) {
+                    container.style.display = 'block';
+                    let html = '';
+                    for (const msg of messages) {
+                        html += `
+                            <div class="pinned-message-item">
+                                <div class="flex-1 cursor-pointer" onclick="scrollToMessage(${msg.id})">
+                                    <span class="font-bold text-purple-600">${escapeHtml(msg.username)}:</span>
+                                    <span class="text-gray-700">${escapeHtml(msg.text.substring(0, 80))}${msg.text.length > 80 ? '...' : ''}</span>
+                                </div>
+                                <button class="unpin-btn" onclick="togglePinMessage(${msg.id})" title="Unpin">
+                                    <i class="fas fa-times-circle"></i>
+                                </button>
+                            </div>
+                        `;
+                    }
+                    listContainer.innerHTML = html;
+                } else {
+                    container.style.display = 'none';
+                }
+            } catch(e) {
+                console.error('Error loading pinned messages:', e);
+            }
+        }
+        
+        function closePinnedMessages() {
+            document.getElementById('pinnedMessages').style.display = 'none';
+        }
+        
+        function scrollToMessage(messageId) {
+            const messageElement = document.querySelector(`.message-item[data-id="${messageId}"]`);
+            if (messageElement) {
+                messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                messageElement.style.backgroundColor = '#fef3c7';
+                setTimeout(() => {
+                    messageElement.style.backgroundColor = '';
+                }, 2000);
+            }
         }
         
         // ============ REACTION FUNCTIONS ============
@@ -355,6 +641,11 @@
             const messageDiv = document.createElement('div');
             messageDiv.className = `message-item flex ${isMine ? 'justify-end' : 'justify-start'} mb-4`;
             messageDiv.setAttribute('data-id', messageId || '');
+            
+            // Check if message is forwarded
+            const isForwarded = message.startsWith('📎 Forwarded from');
+            const forwardedClass = isForwarded ? 'border-l-4 border-purple-400 pl-2' : '';
+            
             let reactionsHtml = '';
             if (reactions && Object.keys(reactions).length > 0) {
                 reactionsHtml = '<div class="reactions-container">';
@@ -364,9 +655,11 @@
                 reactionsHtml += '</div>';
             }
             const editedMark = isEdited ? ' <em class="text-xs">(edited)</em>' : '';
+            
             messageDiv.innerHTML = `
-                <div class="max-w-[70%] ${isMine ? 'bg-purple-600 text-white' : 'bg-white text-gray-800'} rounded-2xl p-3 shadow relative">
+                <div class="max-w-[70%] ${isMine ? 'bg-purple-600 text-white' : 'bg-white text-gray-800'} rounded-2xl p-3 shadow relative ${forwardedClass}">
                     <div class="font-bold text-sm ${isMine ? 'text-purple-200' : 'text-purple-600'}">${escapeHtml(msgUsername)}</div>
+                    ${isForwarded ? '<div class="text-xs text-purple-500 mb-1"><i class="fas fa-share"></i> Forwarded</div>' : ''}
                     <div class="message-text break-words">${escapeHtml(message)}</div>
                     ${reactionsHtml}
                     <div class="text-xs ${isMine ? 'text-purple-200' : 'text-gray-400'} mt-1">
@@ -376,6 +669,8 @@
                     ${isMine ? `
                         <div class="message-actions absolute -top-2 -right-2 space-x-1">
                             <button onclick="editMessage('${messageId}', '${escapeHtml(message).replace(/'/g, "\\'")}')" class="bg-blue-500 text-white rounded-full w-6 h-6 text-xs hover:bg-blue-600 transition"><i class="fas fa-edit"></i></button>
+                            <button onclick="showForwardModal('${messageId}')" class="bg-green-500 text-white rounded-full w-6 h-6 text-xs hover:bg-green-600 transition" title="Forward"><i class="fas fa-share"></i></button>
+                            <button onclick="togglePinMessage('${messageId}')" class="bg-amber-500 text-white rounded-full w-6 h-6 text-xs hover:bg-amber-600 transition" title="Pin"><i class="fas fa-thumbtack"></i></button>
                             <button onclick="deleteMessage('${messageId}')" class="bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600 transition"><i class="fas fa-trash"></i></button>
                         </div>
                     ` : ''}
@@ -413,6 +708,8 @@
                     <div class="reaction-trigger" onclick="showReactionPicker('${messageId}', event)">😊</div>
                     ${isMine ? `
                         <div class="message-actions absolute -top-2 -right-2 space-x-1">
+                            <button onclick="showForwardModal('${messageId}')" class="bg-green-500 text-white rounded-full w-6 h-6 text-xs hover:bg-green-600 transition" title="Forward"><i class="fas fa-share"></i></button>
+                            <button onclick="togglePinMessage('${messageId}')" class="bg-amber-500 text-white rounded-full w-6 h-6 text-xs hover:bg-amber-600 transition" title="Pin"><i class="fas fa-thumbtack"></i></button>
                             <button onclick="deleteMessage('${messageId}')" class="bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600 transition"><i class="fas fa-trash"></i></button>
                         </div>
                     ` : ''}
@@ -579,6 +876,8 @@
                             }
                         });
                     }
+                    // Load pinned messages after loading messages
+                    loadPinnedMessages();
                 }
             } catch(e) {
                 console.error('Could not load messages:', e);

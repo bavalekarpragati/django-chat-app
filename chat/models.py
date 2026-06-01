@@ -45,6 +45,10 @@ class Message(models.Model):
     is_deleted = models.BooleanField(default=False)
     parent_message = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='replies')
     reactions = models.JSONField(default=dict, blank=True)
+     # Add these new fields
+    forwarded_from = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='forwarded_copies')
+    is_forwarded = models.BooleanField(default=False)
+    original_sender = models.CharField(max_length=150, blank=True, null=True)
     
     
     def __str__(self):
@@ -94,6 +98,24 @@ class Message(models.Model):
         if not self.reactions:
             return {}
         return {reaction: len(users) for reaction, users in self.reactions.items()}
+
+
+    def forward_message(self, target_room, forwarded_by):
+        """Create a forwarded copy of this message"""
+        forwarded_message = Message.objects.create(
+            room=target_room,
+            user=forwarded_by,
+            username=forwarded_by.username,
+            text=self.text,
+            message_type=self.message_type,
+            file_url=self.file_url,
+            file_name=self.file_name,
+            file_size=self.file_size,
+            forwarded_from=self,
+            is_forwarded=True,
+            original_sender=self.username
+        )
+        return forwarded_message
     
     class Meta:
         ordering = ['timestamp']
@@ -110,3 +132,16 @@ class RoomMember(models.Model):
     
     def __str__(self):
         return f"{self.user.username} in {self.room.name}"
+    
+class PinnedMessage(models.Model):
+    room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='pinned_messages')
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name='pinned_in_rooms')
+    pinned_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    pinned_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-pinned_at']
+        unique_together = ['room', 'message']  # Prevent duplicate pins
+    
+    def __str__(self):
+        return f"Pinned in {self.room.name}: {self.message.text[:50]}"

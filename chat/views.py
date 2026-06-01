@@ -401,3 +401,99 @@ class RemoveMemberFromRoomView(APIView):
             return Response({'error': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+
+
+# chat/views.py - Add this class
+
+class ForwardMessageView(APIView):
+    """Forward a message to another room"""
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, message_id):
+        try:
+            original_message = Message.objects.get(id=message_id)
+            target_room_id = request.data.get('room_id')
+            target_room = ChatRoom.objects.get(id=target_room_id)
+            
+            # Create forwarded message
+            forwarded_message = Message.objects.create(
+                room=target_room,
+                user=request.user,
+                username=request.user.username,
+                text=original_message.text,
+                message_type=original_message.message_type,
+                file_url=original_message.file_url,
+                file_name=original_message.file_name,
+                file_size=original_message.file_size,
+                forwarded_from=original_message,
+                is_forwarded=True,
+                original_sender=original_message.username
+            )
+            
+            # Create display text
+            display_text = f"📎 Forwarded from {original_message.username}: {original_message.text[:100]}"
+            
+            return Response({
+                'success': True,
+                'message': 'Message forwarded',
+                'forwarded_message': MessageSerializer(forwarded_message).data
+            }, status=status.HTTP_201_CREATED)
+            
+        except Message.DoesNotExist:
+            return Response({'error': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
+        except ChatRoom.DoesNotExist:
+            return Response({'error': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+# Add these imports at the top if not already present
+from .models import PinnedMessage
+
+class PinMessageView(APIView):
+    """Pin or unpin a message in a room"""
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, message_id):
+        try:
+            message = Message.objects.get(id=message_id)
+            room = message.room
+            
+            # Check if already pinned
+            pinned_exists = PinnedMessage.objects.filter(room=room, message=message).exists()
+            
+            if pinned_exists:
+                # Unpin
+                PinnedMessage.objects.filter(room=room, message=message).delete()
+                return Response({
+                    'success': True, 
+                    'pinned': False,
+                    'message': 'Message unpinned'
+                }, status=status.HTTP_200_OK)
+            else:
+                # Pin
+                PinnedMessage.objects.create(
+                    room=room,
+                    message=message,
+                    pinned_by=request.user
+                )
+                return Response({
+                    'success': True, 
+                    'pinned': True,
+                    'message': 'Message pinned'
+                }, status=status.HTTP_201_CREATED)
+                
+        except Message.DoesNotExist:
+            return Response({'error': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class GetPinnedMessagesView(generics.ListAPIView):
+    """Get all pinned messages in a room"""
+    serializer_class = MessageSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        room_id = self.kwargs['room_id']
+        return Message.objects.filter(
+            pinnedmessage__room_id=room_id
+        ).order_by('-pinnedmessage__pinned_at')
