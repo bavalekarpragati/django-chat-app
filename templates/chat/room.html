@@ -120,7 +120,7 @@
         .unpin-btn:hover { background: #fee2e2; }
         .share-btn { background: #10b981; color: white; }
         
-        /* NEW: Search Modal Styles */
+        /* Search Modal Styles */
         .search-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 10002; align-items: center; justify-content: center; }
         .search-modal-content { background: white; border-radius: 20px; width: 90%; max-width: 600px; max-height: 80vh; overflow: hidden; animation: modalFadeIn 0.3s ease; }
         .search-header { padding: 20px; border-bottom: 1px solid #e2e8f0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
@@ -136,7 +136,7 @@
         .search-result-time { font-size: 10px; color: #64748b; margin-top: 5px; }
         .search-stats { padding: 10px 20px; background: #f1f5f9; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; }
         
-        /* NEW: Voice Recording Styles */
+        /* Voice Recording Styles */
         .recording-indicator { display: inline-block; width: 12px; height: 12px; background-color: #ef4444; border-radius: 50%; animation: pulse 1s infinite; margin-right: 8px; }
         @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
         .recording-timer { font-size: 14px; font-weight: bold; color: #ef4444; }
@@ -144,6 +144,69 @@
         /* Loading spinner */
         .loading-spinner { display: inline-block; width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Group Call Notification Styles */
+        .group-call-notification {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            background: white;
+            border-radius: 16px;
+            padding: 16px 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            z-index: 1000;
+            min-width: 300px;
+            animation: slideInRight 0.3s ease;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        .group-call-notification button {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        
+        .group-call-join-btn {
+            background: #22c55e;
+            color: white;
+        }
+        
+        .group-call-join-btn:hover {
+            background: #16a34a;
+        }
+        
+        .group-call-dismiss-btn {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .group-call-dismiss-btn:hover {
+            background: #dc2626;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-purple-600 to-blue-500">
@@ -163,11 +226,11 @@
                 <button onclick="testMicrophone()" class="test-mic-btn">
                     <i class="fas fa-microphone"></i> Test Mic
                 </button>
-                <!-- NEW: Search Button -->
+                <!-- Search Button -->
                 <button onclick="openSearchModal()" class="bg-purple-500 text-white rounded-lg px-3 py-1 text-sm hover:bg-purple-600 transition ml-2">
                     <i class="fas fa-search"></i> Search
                 </button>
-                <!-- NEW: Group Call Button -->
+                <!-- Group Call Button -->
                 <button id="groupCallBtn" onclick="startGroupCall()" class="bg-green-500 text-white rounded-lg px-3 py-1 text-sm hover:bg-green-600 transition ml-2">
                     <i class="fas fa-users"></i> Group Call
                 </button>
@@ -198,7 +261,7 @@
                 <button id="file-btn" class="bg-gray-500 text-white rounded-lg px-4 py-2 hover:bg-gray-600 transition">
                     <i class="fas fa-paperclip"></i> <span class="hidden sm:inline">Attach</span>
                 </button>
-                <!-- NEW: Voice Message Button -->
+                <!-- Voice Message Button -->
                 <button id="voiceMsgBtn" class="bg-red-500 text-white rounded-lg px-4 py-2 hover:bg-red-600 transition" title="Voice Message">
                     <i class="fas fa-microphone-alt"></i>
                 </button>
@@ -251,7 +314,7 @@
                 <button id="videoToggleBtn" class="video-toggle-btn" onclick="toggleVideo()">
                     <i class="fas fa-video"></i>
                 </button>
-                <!-- NEW: Screen Share Button -->
+                <!-- Screen Share Button -->
                 <button id="screenShareBtn" class="bg-blue-500 text-white rounded-full w-12 h-12 text-xl hover:bg-blue-600 transition" onclick="toggleScreenShare()" title="Share Screen">
                     <i class="fas fa-desktop"></i>
                 </button>
@@ -277,7 +340,7 @@
         </div>
     </div>
 
-    <!-- NEW: Search Modal -->
+    <!-- Search Modal -->
     <div id="searchModal" class="search-modal">
         <div class="search-modal-content">
             <div class="search-header">
@@ -321,6 +384,7 @@
         // Group Call variables
         let groupCallActive = false;
         let groupCallStream = null;
+        let groupCallNotificationTimeout = null;
         
         function getUserInfo() {
             const token = localStorage.getItem('access_token');
@@ -345,6 +409,69 @@
             localStorage.removeItem('chat_username');
             localStorage.removeItem('user_id');
             window.location.href = '/login/';
+        }
+        
+        // ============ GROUP CALL NOTIFICATION FUNCTIONS ============
+        
+        function showGroupCallNotification(from) {
+            // Remove existing notification
+            const existing = document.getElementById('groupCallNotification');
+            if (existing) {
+                existing.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => existing.remove(), 300);
+            }
+            
+            // Clear existing timeout
+            if (groupCallNotificationTimeout) {
+                clearTimeout(groupCallNotificationTimeout);
+            }
+            
+            const notification = document.createElement('div');
+            notification.id = 'groupCallNotification';
+            notification.className = 'group-call-notification';
+            notification.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <div class="bg-green-500 rounded-full w-12 h-12 flex items-center justify-center">
+                        <i class="fas fa-users text-white text-xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-bold text-gray-800">Group Call Started</div>
+                        <div class="text-sm text-gray-600">${escapeHtml(from)} started a group call</div>
+                    </div>
+                    <button onclick="joinGroupCallFromNotification()" class="group-call-join-btn">
+                        <i class="fas fa-phone"></i> Join
+                    </button>
+                    <button onclick="dismissGroupCallNotification()" class="group-call-dismiss-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-dismiss after 15 seconds
+            groupCallNotificationTimeout = setTimeout(() => {
+                dismissGroupCallNotification();
+            }, 15000);
+        }
+        
+        function dismissGroupCallNotification() {
+            const notification = document.getElementById('groupCallNotification');
+            if (notification) {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) notification.remove();
+                }, 300);
+            }
+            if (groupCallNotificationTimeout) {
+                clearTimeout(groupCallNotificationTimeout);
+                groupCallNotificationTimeout = null;
+            }
+        }
+        
+        function joinGroupCallFromNotification() {
+            dismissGroupCallNotification();
+            joinGroupCall();
         }
         
         // ============ SEARCH FUNCTIONS ============
@@ -603,17 +730,36 @@
             groupCallActive = true;
             addSystemMessage('📞 Starting group call... Everyone in the room can join!');
             
+            // Send group call start signal to all users
+            if (callSocket && callSocket.readyState === WebSocket.OPEN) {
+                callSocket.send(JSON.stringify({
+                    'type': 'group_call_start',
+                    'from': username
+                }));
+                console.log('📞 Group call start signal sent to room');
+            }
+            
             navigator.mediaDevices.getUserMedia({ audio: true, video: false })
                 .then(stream => {
                     groupCallStream = stream;
                     showCallModal(false);
                     displayLocalVideo();
                     
-                    if (callSocket && callSocket.readyState === WebSocket.OPEN) {
-                        callSocket.send(JSON.stringify({
-                            'type': 'group_call_start',
-                            'from': username
-                        }));
+                    // Create peer connection
+                    if (!peerConnection) {
+                        peerConnection = new RTCPeerConnection(configuration);
+                        groupCallStream.getTracks().forEach(track => {
+                            peerConnection.addTrack(track, groupCallStream);
+                        });
+                        
+                        peerConnection.ontrack = (event) => {
+                            const remoteVideo = document.getElementById('remoteVideo');
+                            if (remoteVideo && event.streams[0]) {
+                                remoteVideo.srcObject = event.streams[0];
+                                addSystemMessage('✅ Group call connected!');
+                                updateCallStatus('Connected');
+                            }
+                        };
                     }
                     
                     callActive = true;
@@ -623,16 +769,29 @@
                     groupBtn.innerHTML = '<i class="fas fa-phone-slash"></i> End Call';
                     groupBtn.classList.add('bg-red-500');
                     groupBtn.classList.remove('bg-green-500');
+                    
+                    addSystemMessage('🎤 You are now in the group call. Others can join!');
                 })
                 .catch(error => {
                     console.error('Error starting group call:', error);
-                    addSystemMessage('❌ Could not start group call');
+                    addSystemMessage('❌ Could not start group call. Please check your microphone.');
                     groupCallActive = false;
                 });
         }
         
         function endGroupCall() {
+            if (!groupCallActive) return;
+            
             groupCallActive = false;
+            
+            // Send group call end signal to all users
+            if (callSocket && callSocket.readyState === WebSocket.OPEN) {
+                callSocket.send(JSON.stringify({
+                    'type': 'group_call_end',
+                    'from': username
+                }));
+                console.log('📞 Group call end signal sent to room');
+            }
             
             if (groupCallStream) {
                 groupCallStream.getTracks().forEach(track => track.stop());
@@ -642,13 +801,6 @@
             endCall();
             addSystemMessage('📞 Group call ended');
             
-            if (callSocket && callSocket.readyState === WebSocket.OPEN) {
-                callSocket.send(JSON.stringify({
-                    'type': 'group_call_end',
-                    'from': username
-                }));
-            }
-            
             const groupBtn = document.getElementById('groupCallBtn');
             groupBtn.innerHTML = '<i class="fas fa-users"></i> Group Call';
             groupBtn.classList.remove('bg-red-500');
@@ -656,7 +808,10 @@
         }
         
         function joinGroupCall() {
-            if (!groupCallActive) return;
+            if (!groupCallActive) {
+                addSystemMessage('❌ No active group call to join');
+                return;
+            }
             
             addSystemMessage('🎤 You joined the group call');
             
@@ -665,11 +820,28 @@
                     groupCallStream = stream;
                     showCallModal(false);
                     displayLocalVideo();
+                    
+                    if (!peerConnection) {
+                        peerConnection = new RTCPeerConnection(configuration);
+                        groupCallStream.getTracks().forEach(track => {
+                            peerConnection.addTrack(track, groupCallStream);
+                        });
+                        
+                        peerConnection.ontrack = (event) => {
+                            const remoteVideo = document.getElementById('remoteVideo');
+                            if (remoteVideo && event.streams[0]) {
+                                remoteVideo.srcObject = event.streams[0];
+                                addSystemMessage('✅ Connected to group call!');
+                            }
+                        };
+                    }
+                    
                     callActive = true;
                     startCallTimer();
                 })
                 .catch(error => {
                     console.error('Error joining group call:', error);
+                    addSystemMessage('❌ Could not join group call');
                 });
         }
         
@@ -1554,14 +1726,14 @@
                         closeCallModal();
                     }
                 } else if (data.type === 'group_call_start') {
-                    if (!groupCallActive && data.from !== username) {
-                        if (confirm(`${data.from} started a group call. Join?`)) {
-                            joinGroupCall();
-                        }
+                    console.log('📞 GROUP CALL STARTED by:', data.from);
+                    if (data.from !== username) {
+                        showGroupCallNotification(data.from);
                     }
                 } else if (data.type === 'group_call_end') {
+                    console.log('📞 GROUP CALL ENDED by:', data.from);
                     if (groupCallActive) {
-                        addSystemMessage(`${data.from} ended the group call`);
+                        addSystemMessage(`📞 Group call ended by ${data.from}`);
                         endGroupCall();
                     }
                 }
