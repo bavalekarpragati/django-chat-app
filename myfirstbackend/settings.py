@@ -81,13 +81,19 @@ TEMPLATES = [
 WSGI_APPLICATION = 'myfirstbackend.wsgi.application'
 ASGI_APPLICATION = 'myfirstbackend.asgi.application'
 
-# Database - Simple SQLite for now (works everywhere)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+if os.environ.get('DATABASE_URL'):
+    import dj_database_url
+
+    DATABASES['default'] = dj_database_url.config(
+        default=os.environ.get('DATABASE_URL')
+    )
 
 # For PostgreSQL in production (optional - uncomment when needed)
 # if os.environ.get('DATABASE_URL'):
@@ -120,7 +126,11 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # Media files
 MAX_UPLOAD_SIZE = 10485760
