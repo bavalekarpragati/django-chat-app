@@ -22,10 +22,6 @@ db.sqlite3-journal
 /staticfiles/
 /static/
 
-# Database
-*.db
-*.sqlite3
-
 # IDE
 .vscode/
 .idea/
@@ -34,7 +30,7 @@ db.sqlite3-journal
 *~
 .DS_Store
 
-# Environment variables
+# Environment
 .env
 .env.local
 .env.production
@@ -42,12 +38,6 @@ db.sqlite3-journal
 # Logs
 *.log
 debug.log
-
-# Testing
-.coverage
-htmlcov/
-.tox/
-.pytest_cache/
 
 # Uploads
 /media/uploads/
