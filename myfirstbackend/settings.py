@@ -15,18 +15,23 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-umga!9!9(c2^5o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '0.0.0.0',
-    '10.200.39.207',
-    '10.200.39.53',
-    '10.200.39.255',
-    '.onrender.com',
-    '.railway.app',
-    '.pythonanywhere.com',
-    '*',
-]
+# ALLOWED_HOSTS = [
+#     'localhost',
+#     '127.0.0.1',
+#     '0.0.0.0',
+#     '10.200.39.207',
+#     '10.200.39.53',
+#     '10.200.39.255',
+#     '.onrender.com',
+#     '.railway.app',
+#     '.pythonanywhere.com',
+#     '*',
+# ]
+
+ALLOWED_HOSTS = os.environ.get(
+    "ALLOWED_HOSTS",
+    "localhost,127.0.0.1,.onrender.com"
+).split(",")
 
 # Application definition
 INSTALLED_APPS = [
