@@ -1095,6 +1095,7 @@
         // ============ WEBSOCKET AND MESSAGE FUNCTIONS ============
         
         function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
             const wsUrl = `ws://${window.location.host}/ws/chat/${roomName}/`;
             socket = new WebSocket(wsUrl);
             socket.onopen = () => console.log('✅ Connected to chat as:', username);
